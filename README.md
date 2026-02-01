@@ -6,7 +6,12 @@
 
 > **Basis** (commodity trading term) + **Mind** (intelligence) — A decision support system for physical grain trading operations, transforming scattered market signals into consistent and auditable recommendations.
 
-![Dashboard Preview](assets/screenshot-home.png)
+<img width="1780" height="782" alt="image" src="https://github.com/user-attachments/assets/c3785404-cee0-4b30-ba9b-6b8af3093019" />
+<img width="1406" height="835" alt="image" src="https://github.com/user-attachments/assets/f77005a1-5010-4444-b3c5-1b4eedbe50ed" />
+<img width="1414" height="851" alt="image" src="https://github.com/user-attachments/assets/af3aeb68-ecc5-45da-bf37-35d412b30b36" />
+<img width="1407" height="864" alt="image" src="https://github.com/user-attachments/assets/34264c2b-aa1a-470a-9b2c-913841dec293" />
+<img width="1401" height="872" alt="image" src="https://github.com/user-attachments/assets/d5f5cfdf-fc24-4bce-b3de-d030669b99a7" />
+<img width="886" height="894" alt="image" src="https://github.com/user-attachments/assets/ff20b3e9-7935-47fb-ba7b-8ee2eeb89942" />
 
 ## 🎯 Overview
 
@@ -92,8 +97,6 @@ streamlit run dashboard/app.py
 ```
 
 Open **http://localhost:8501** in your browser.
-
-![Simulator](assets/screenshot-simulador.png)
 
 ## 📊 Score Components
 
