@@ -1,0 +1,17 @@
+# Motor de Decisão - Mercado Físico de Grãos
+# Python 3.11+
+
+# Dashboard (required for visualization)
+streamlit>=1.28.0
+pandas>=2.0.0
+
+# Optional: Jupyter Notebooks
+matplotlib>=3.7.0
+jupyter>=1.0.0
+ipykernel>=6.0.0
+
+# Optional: Development
+black>=23.0.0
+mypy>=1.0.0
+pytest>=7.0.0
+pytest-cov>=4.0.0
