@@ -6,12 +6,12 @@
 
 > **Basis** (commodity trading term) + **Mind** (intelligence) — A decision support system for physical grain trading operations, transforming scattered market signals into consistent and auditable recommendations.
 
-<img width="1780" height="782" alt="image" src="https://github.com/user-attachments/assets/c3785404-cee0-4b30-ba9b-6b8af3093019" />
-<img width="1406" height="835" alt="image" src="https://github.com/user-attachments/assets/f77005a1-5010-4444-b3c5-1b4eedbe50ed" />
-<img width="1414" height="851" alt="image" src="https://github.com/user-attachments/assets/af3aeb68-ecc5-45da-bf37-35d412b30b36" />
-<img width="1407" height="864" alt="image" src="https://github.com/user-attachments/assets/34264c2b-aa1a-470a-9b2c-913841dec293" />
-<img width="1401" height="872" alt="image" src="https://github.com/user-attachments/assets/d5f5cfdf-fc24-4bce-b3de-d030669b99a7" />
-<img width="886" height="894" alt="image" src="https://github.com/user-attachments/assets/ff20b3e9-7935-47fb-ba7b-8ee2eeb89942" />
+<img width="1784" height="811" alt="image" src="https://github.com/user-attachments/assets/9ac91985-44f3-40c2-a474-75369976fbf7" />
+<img width="1493" height="820" alt="image" src="https://github.com/user-attachments/assets/2f1ff170-c253-492b-9e1f-9f2a38323059" />
+<img width="1416" height="874" alt="image" src="https://github.com/user-attachments/assets/8f3caaeb-7f70-40be-b617-e25d0407c7e2" />
+<img width="1423" height="865" alt="image" src="https://github.com/user-attachments/assets/7909df82-fa71-46d7-804d-3c09eff62d2f" />
+<img width="1419" height="886" alt="image" src="https://github.com/user-attachments/assets/d11f05a9-d2de-4af9-a219-e48514826aa7" />
+<img width="971" height="887" alt="image" src="https://github.com/user-attachments/assets/38161f03-dd7f-476a-8a0c-9fb77ec98b60" />
 
 ## 🎯 Overview
 
