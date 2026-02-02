@@ -1,5 +1,6 @@
 # BasisMind 🌾
 
+[![CI](https://github.com/bruno-portfolio/BasisMind/actions/workflows/ci.yml/badge.svg)](https://github.com/bruno-portfolio/BasisMind/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-FF4B4B.svg)](https://streamlit.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
