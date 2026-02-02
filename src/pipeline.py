@@ -163,6 +163,7 @@ class DataPipeline:
             )
 
         if is_valid:
+            assert data is not None
             row = MarketDataRow(
                 date=target_date,
                 premium_paranagua=data.get("premium_paranagua"),

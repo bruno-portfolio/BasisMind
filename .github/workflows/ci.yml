@@ -28,7 +28,7 @@
           run: black --check src/ dashboard/
 
         - name: Verificar tipos (mypy)
-          run: mypy src/ --ignore-missing-imports
+          run: mypy src/
 
         - name: Rodar testes
           run: pytest tests/ -v

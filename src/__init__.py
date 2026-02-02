@@ -62,7 +62,7 @@ from scoring import (
     PhysicalClassification,
     Intensity,
 )
-from overrides import (
+from .overrides import (
     evaluate_overrides,
     get_override_justification,
     check_queda_conjunta,

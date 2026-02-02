@@ -235,6 +235,8 @@ def get_override_justification(evaluation: OverrideEvaluation) -> str:
     if not evaluation.has_override:
         return "Nenhum override ativo. Recomendacao baseada no score."
 
+    assert evaluation.dominant_override is not None
+
     lines = [f"OVERRIDE ATIVO: {evaluation.dominant_override.type.value.upper()}"]
     lines.append(f"Motivo: {evaluation.dominant_override.reason}")
 
