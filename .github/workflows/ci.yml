@@ -31,4 +31,4 @@
           run: mypy src/
 
         - name: Rodar testes
-          run: pytest tests/ -v
+          run: PYTHONPATH=src pytest tests/ -v
