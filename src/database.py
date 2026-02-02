@@ -80,8 +80,7 @@ END;
 def get_connection() -> Iterator[sqlite3.Connection]:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(
-        DB_PATH,
-        detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES
+        DB_PATH, detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES
     )
     conn.row_factory = sqlite3.Row
     try:
@@ -118,17 +117,20 @@ def insert_market_data(row: MarketDataRow) -> bool:
         exports_weekly_tons = excluded.exports_weekly_tons
     """
     with get_connection() as conn:
-        conn.execute(sql, (
-            row.date,
-            float(row.premium_paranagua) if row.premium_paranagua else None,
-            float(row.chicago_front) if row.chicago_front else None,
-            float(row.usd_brl) if row.usd_brl else None,
-            float(row.fob_us_gulf) if row.fob_us_gulf else None,
-            row.lineup_bruto,
-            row.lineup_liquido,
-            row.cancelamentos_7d,
-            float(row.exports_weekly_tons) if row.exports_weekly_tons else None,
-        ))
+        conn.execute(
+            sql,
+            (
+                row.date,
+                float(row.premium_paranagua) if row.premium_paranagua else None,
+                float(row.chicago_front) if row.chicago_front else None,
+                float(row.usd_brl) if row.usd_brl else None,
+                float(row.fob_us_gulf) if row.fob_us_gulf else None,
+                row.lineup_bruto,
+                row.lineup_liquido,
+                row.cancelamentos_7d,
+                float(row.exports_weekly_tons) if row.exports_weekly_tons else None,
+            ),
+        )
     return True
 
 
@@ -138,7 +140,7 @@ def log_quality_issue(
     issue_type: str,
     value_found: Any,
     expected_range: str,
-    severity: str
+    severity: str,
 ) -> None:
     sql = """
     INSERT INTO data_quality_log
@@ -146,7 +148,9 @@ def log_quality_issue(
     VALUES (?, ?, ?, ?, ?, ?)
     """
     with get_connection() as conn:
-        conn.execute(sql, (dt, column, issue_type, str(value_found), expected_range, severity))
+        conn.execute(
+            sql, (dt, column, issue_type, str(value_found), expected_range, severity)
+        )
 
 
 def log_pipeline_run(
@@ -158,7 +162,7 @@ def log_pipeline_run(
     anomalies_detected: int,
     error_message: str | None,
     started_at: str,
-    completed_at: str | None
+    completed_at: str | None,
 ) -> int:
     sql = """
     INSERT INTO pipeline_runs
@@ -167,11 +171,20 @@ def log_pipeline_run(
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
     with get_connection() as conn:
-        cursor = conn.execute(sql, (
-            run_date, status, records_processed, records_failed,
-            missing_rate, anomalies_detected, error_message,
-            started_at, completed_at
-        ))
+        cursor = conn.execute(
+            sql,
+            (
+                run_date,
+                status,
+                records_processed,
+                records_failed,
+                missing_rate,
+                anomalies_detected,
+                error_message,
+                started_at,
+                completed_at,
+            ),
+        )
         return cursor.lastrowid or 0
 
 
@@ -190,7 +203,7 @@ def get_historical_by_regime(
     column: str,
     regime_months: tuple[int, ...],
     years: int = 3,
-    before_date: date | None = None
+    before_date: date | None = None,
 ) -> list[float]:
     placeholders = ",".join("?" * len(regime_months))
     ref_date = before_date or date.today()
@@ -226,7 +239,9 @@ def get_lineup_at_date(dt: date) -> dict[str, int | None] | None:
         }
 
 
-def get_lineup_days_ago(reference_date: date, days: int = 7) -> dict[str, int | None] | None:
+def get_lineup_days_ago(
+    reference_date: date, days: int = 7
+) -> dict[str, int | None] | None:
     sql = """
     SELECT lineup_bruto, lineup_liquido, cancelamentos_7d
     FROM market_data
@@ -243,11 +258,7 @@ def get_lineup_days_ago(reference_date: date, days: int = 7) -> dict[str, int | 
         }
 
 
-def get_value_days_ago(
-    column: str,
-    reference_date: date,
-    days: int
-) -> float | None:
+def get_value_days_ago(column: str, reference_date: date, days: int) -> float | None:
     sql = f"""
     SELECT {column} FROM market_data
     WHERE date = date(?, '-' || ? || ' days')
@@ -260,8 +271,7 @@ def get_value_days_ago(
 
 
 def get_exports_same_week_historical(
-    reference_date: date,
-    years: int = 5
+    reference_date: date, years: int = 5
 ) -> list[float]:
     week_number = reference_date.isocalendar()[1]
     sql = """
@@ -273,12 +283,15 @@ def get_exports_same_week_historical(
     ORDER BY date DESC
     """
     with get_connection() as conn:
-        rows = conn.execute(sql, (
-            week_number,
-            reference_date.isoformat(),
-            years,
-            reference_date.isoformat()
-        )).fetchall()
+        rows = conn.execute(
+            sql,
+            (
+                week_number,
+                reference_date.isoformat(),
+                years,
+                reference_date.isoformat(),
+            ),
+        ).fetchall()
         return [float(row[0]) for row in rows]
 
 

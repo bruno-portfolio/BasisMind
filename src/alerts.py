@@ -38,7 +38,6 @@ class Alert:
 
 
 class AlertHandler(ABC):
-
     @abstractmethod
     def send(self, alert: Alert) -> bool:
         pass
@@ -49,15 +48,16 @@ class AlertHandler(ABC):
 
 
 class LogFileHandler(AlertHandler):
-
     def __init__(self, log_file: Path | None = None) -> None:
         self._log_file = log_file or (LOGS_DIR / "alerts.log")
 
     def send(self, alert: Alert) -> bool:
         try:
-            with open(self._log_file, 'a', encoding='utf-8') as f:
+            with open(self._log_file, "a", encoding="utf-8") as f:
                 ts = alert.timestamp.strftime(DATE_FORMAT) if alert.timestamp else ""
-                line = f"{ts} | {alert.level.upper():8} | {alert.source} | {alert.message}"
+                line = (
+                    f"{ts} | {alert.level.upper():8} | {alert.source} | {alert.message}"
+                )
                 if alert.details:
                     line += f" | {alert.details}"
                 f.write(line + "\n")
@@ -71,16 +71,15 @@ class LogFileHandler(AlertHandler):
 
 
 class ConsoleHandler(AlertHandler):
-
     def send(self, alert: Alert) -> bool:
         level_colors = {
-            'info': '\033[94m',
-            'warning': '\033[93m',
-            'error': '\033[91m',
-            'critical': '\033[95m',
+            "info": "\033[94m",
+            "warning": "\033[93m",
+            "error": "\033[91m",
+            "critical": "\033[95m",
         }
-        reset = '\033[0m'
-        color = level_colors.get(alert.level, '')
+        reset = "\033[0m"
+        color = level_colors.get(alert.level, "")
         ts = alert.timestamp.strftime(DATE_FORMAT) if alert.timestamp else ""
         print(f"{color}[{ts}] {alert.level.upper()}: {alert.message}{reset}")
         return True
@@ -90,7 +89,6 @@ class ConsoleHandler(AlertHandler):
 
 
 class EmailHandler(AlertHandler):
-
     def __init__(
         self,
         smtp_host: str,
@@ -98,7 +96,7 @@ class EmailHandler(AlertHandler):
         username: str,
         password: str,
         recipients: list[str],
-        min_level: str = "critical"
+        min_level: str = "critical",
     ) -> None:
         self._smtp_host = smtp_host
         self._smtp_port = smtp_port
@@ -106,7 +104,7 @@ class EmailHandler(AlertHandler):
         self._password = password
         self._recipients = recipients
         self._min_level = min_level
-        self._level_priority = {'info': 0, 'warning': 1, 'error': 2, 'critical': 3}
+        self._level_priority = {"info": 0, "warning": 1, "error": 2, "critical": 3}
 
     def _should_send(self, alert: Alert) -> bool:
         alert_priority = self._level_priority.get(alert.level, 0)
@@ -118,7 +116,8 @@ class EmailHandler(AlertHandler):
             return True
 
         try:
-            msg = MIMEText(f"""
+            msg = MIMEText(
+                f"""
 Motor de Decisão - Alerta {alert.level.upper()}
 
 Fonte: {alert.source}
@@ -127,10 +126,11 @@ Timestamp: {alert.timestamp}
 
 Detalhes:
 {alert.details}
-            """)
-            msg['Subject'] = f"[Motor Decisão] {alert.level.upper()}: {alert.source}"
-            msg['From'] = self._username
-            msg['To'] = ', '.join(self._recipients)
+            """
+            )
+            msg["Subject"] = f"[Motor Decisão] {alert.level.upper()}: {alert.source}"
+            msg["From"] = self._username
+            msg["To"] = ", ".join(self._recipients)
 
             with smtplib.SMTP(self._smtp_host, self._smtp_port) as server:
                 server.starttls()
@@ -146,7 +146,6 @@ Detalhes:
 
 
 class AlertManager:
-
     def __init__(self) -> None:
         self._handlers: list[AlertHandler] = []
         self._logger = logging.getLogger("AlertManager")
@@ -172,28 +171,35 @@ class AlertManager:
 
         return success
 
-    def info(self, source: str, message: str, details: dict[str, Any] | None = None) -> None:
+    def info(
+        self, source: str, message: str, details: dict[str, Any] | None = None
+    ) -> None:
         self.send(Alert("info", source, message, details))
 
-    def warning(self, source: str, message: str, details: dict[str, Any] | None = None) -> None:
+    def warning(
+        self, source: str, message: str, details: dict[str, Any] | None = None
+    ) -> None:
         self.send(Alert("warning", source, message, details))
 
-    def error(self, source: str, message: str, details: dict[str, Any] | None = None) -> None:
+    def error(
+        self, source: str, message: str, details: dict[str, Any] | None = None
+    ) -> None:
         self.send(Alert("error", source, message, details))
 
-    def critical(self, source: str, message: str, details: dict[str, Any] | None = None) -> None:
+    def critical(
+        self, source: str, message: str, details: dict[str, Any] | None = None
+    ) -> None:
         self.send(Alert("critical", source, message, details))
 
 
 def setup_logging(
-    level: int = logging.INFO,
-    log_file: Path | None = None
+    level: int = logging.INFO, log_file: Path | None = None
 ) -> logging.Logger:
     log_file = log_file or (LOGS_DIR / "motor_decisao.log")
 
     handlers: list[logging.Handler] = [
         logging.StreamHandler(),
-        logging.FileHandler(log_file, encoding='utf-8'),
+        logging.FileHandler(log_file, encoding="utf-8"),
     ]
 
     logging.basicConfig(

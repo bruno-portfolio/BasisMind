@@ -11,9 +11,12 @@ sys.path.insert(0, str(ROOT / "data"))
 from engine import DecisionEngine, MarketInputs, DecisionReport
 from book import BookState
 
-st.set_page_config(page_title="Decision Engine | BasisMind", page_icon="🎯", layout="wide")
+st.set_page_config(
+    page_title="Decision Engine | BasisMind", page_icon="🎯", layout="wide"
+)
 
-st.markdown("""
+st.markdown(
+    """
 <style>
     .scenario-card {
         background: white;
@@ -63,7 +66,9 @@ st.markdown("""
         margin: 4px 0;
     }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 st.title("🎯 Decision Engine in Action")
 st.markdown("See how the engine responds to different market scenarios.")
@@ -208,8 +213,8 @@ for i, (key, scenario) in enumerate(SCENARIOS.items()):
         if st.button(scenario["nome"], key=key, use_container_width=True):
             selected = key
 
-if 'selected_scenario' not in st.session_state:
-    st.session_state.selected_scenario = 'normal'
+if "selected_scenario" not in st.session_state:
+    st.session_state.selected_scenario = "normal"
 
 if selected:
     st.session_state.selected_scenario = selected
@@ -244,29 +249,40 @@ with col1:
         "forte": "STRONG",
         "neutro": "NEUTRAL",
         "fraco": "WEAK",
-        "muito_fraco": "VERY WEAK"
+        "muito_fraco": "VERY WEAK",
     }
-    classification_display = classification_map.get(report.classificacao, report.classificacao.upper())
+    classification_display = classification_map.get(
+        report.classificacao, report.classificacao.upper()
+    )
 
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="{score_class} score-display">
         {score:.0f}
         <div style="font-size: 1rem; font-weight: 400;">{classification_display}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown("<br>", unsafe_allow_html=True)
 
     st.markdown("#### Recommendations")
 
-    acao_fisica = report.recomendacao_fisica['acao']
-    acao_map = {"aumentar_forte": "STRONG INCREASE", "aumentar": "INCREASE", "manter": "HOLD", "reduzir": "REDUCE", "reduzir_forte": "STRONG REDUCE"}
+    acao_fisica = report.recomendacao_fisica["acao"]
+    acao_map = {
+        "aumentar_forte": "STRONG INCREASE",
+        "aumentar": "INCREASE",
+        "manter": "HOLD",
+        "reduzir": "REDUCE",
+        "reduzir_forte": "STRONG REDUCE",
+    }
     acao_display = acao_map.get(acao_fisica, acao_fisica.upper())
 
-    if 'aumentar' in acao_fisica:
+    if "aumentar" in acao_fisica:
         rec_class = "rec-aumentar"
         icon = "📈"
-    elif 'reduzir' in acao_fisica:
+    elif "reduzir" in acao_fisica:
         rec_class = "rec-reduzir"
         icon = "📉"
     else:
@@ -274,61 +290,82 @@ with col1:
         icon = "➡️"
 
     intensity_map = {"forte": "Strong", "moderada": "Moderate", "neutra": "Neutral"}
-    intensity_display = intensity_map.get(report.recomendacao_fisica['intensidade'], report.recomendacao_fisica['intensidade'])
+    intensity_display = intensity_map.get(
+        report.recomendacao_fisica["intensidade"],
+        report.recomendacao_fisica["intensidade"],
+    )
 
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="rec-box {rec_class}">
         <strong>{icon} Physical:</strong> {acao_display}<br>
         <small>Intensity: {intensity_display} | Sizing: {report.recomendacao_fisica['sizing_pct']:+.0f}%</small>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
-    acao_hedge = report.recomendacao_hedge['acao']
+    acao_hedge = report.recomendacao_hedge["acao"]
     acao_hedge_display = acao_map.get(acao_hedge, acao_hedge.upper())
 
-    if 'aumentar' in acao_hedge:
+    if "aumentar" in acao_hedge:
         rec_class = "rec-aumentar"
         icon = "🛡️"
-    elif 'reduzir' in acao_hedge:
+    elif "reduzir" in acao_hedge:
         rec_class = "rec-reduzir"
         icon = "📉"
     else:
         rec_class = "rec-manter"
         icon = "➡️"
 
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="rec-box {rec_class}">
         <strong>{icon} Hedge:</strong> {acao_hedge_display}<br>
         <small>Delta: {report.recomendacao_hedge['delta_pp']:+.0f}pp vs target</small>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("#### Overrides")
 
     override_names = {
-        'logistica': 'Logistics',
-        'queda_conjunta': 'Joint Drop',
-        'armadilha_premio': 'Premium Trap',
-        'competitividade_critica': 'Critical Competitiveness',
-        'chicago_especulativo': 'Speculative Chicago'
+        "logistica": "Logistics",
+        "queda_conjunta": "Joint Drop",
+        "armadilha_premio": "Premium Trap",
+        "competitividade_critica": "Critical Competitiveness",
+        "chicago_especulativo": "Speculative Chicago",
     }
 
-    override_types = ['logistica', 'queda_conjunta', 'armadilha_premio', 'competitividade_critica', 'chicago_especulativo']
+    override_types = [
+        "logistica",
+        "queda_conjunta",
+        "armadilha_premio",
+        "competitividade_critica",
+        "chicago_especulativo",
+    ]
     active_overrides = report.overrides_ativos
 
     override_html = ""
     for ov in override_types:
         display_name = override_names.get(ov, ov.replace("_", " ").title())
         if ov in active_overrides:
-            override_html += f'<span class="override-badge override-active">{display_name}</span>'
+            override_html += (
+                f'<span class="override-badge override-active">{display_name}</span>'
+            )
         else:
-            override_html += f'<span class="override-badge override-inactive">{display_name}</span>'
+            override_html += (
+                f'<span class="override-badge override-inactive">{display_name}</span>'
+            )
 
     st.markdown(override_html, unsafe_allow_html=True)
 
     if report.override_dominante:
-        dominant_display = override_names.get(report.override_dominante, report.override_dominante)
+        dominant_display = override_names.get(
+            report.override_dominante, report.override_dominante
+        )
         st.warning(f"**Dominant Override:** {dominant_display}")
 
     if report.modulacao_aplicada:
@@ -340,10 +377,16 @@ with col2:
 
     components = report.componentes
 
-    component_names = {'lineup': 'Lineup', 'premio': 'Premium', 'competitividade': 'Competitiveness', 'demanda': 'Demand', 'cambio': 'FX Rate'}
+    component_names = {
+        "lineup": "Lineup",
+        "premio": "Premium",
+        "competitividade": "Competitiveness",
+        "demanda": "Demand",
+        "cambio": "FX Rate",
+    }
 
     for name, data in components.items():
-        score_val = data['score']
+        score_val = data["score"]
         if score_val >= 65:
             color = "#28a745"
         elif score_val <= 35:
@@ -351,7 +394,13 @@ with col2:
         else:
             color = "#ffc107"
 
-        weights = {'lineup': 30, 'premio': 25, 'competitividade': 20, 'demanda': 15, 'cambio': 10}
+        weights = {
+            "lineup": 30,
+            "premio": 25,
+            "competitividade": 20,
+            "demanda": 15,
+            "cambio": 10,
+        }
         weight = weights.get(name, 0)
 
         display_name = component_names.get(name, name.title())
@@ -372,22 +421,26 @@ with col2:
     col_a, col_b = st.columns(2)
 
     with col_a:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         | Indicator | Value |
         |-----------|-------|
         | Weekly Lineup Var. | {inputs.var_semanal_lineup:+.1f}% |
         | Premium Percentile | {inputs.percentil_premium:.0f} |
         | Adjusted Spread | {inputs.spread_adjusted:+.1f} USD/ton |
-        """)
+        """
+        )
 
     with col_b:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         | Indicator | Value |
         |-----------|-------|
         | Demand Z-Pace | {inputs.z_pace:+.2f} |
         | FX Var. 5d | {inputs.var_cambio_5d:+.1f}% |
         | Chicago Percentile | {inputs.chicago_percentile:.0f} |
-        """)
+        """
+        )
 
     st.markdown("### Justification")
     st.info(report.justificativa)

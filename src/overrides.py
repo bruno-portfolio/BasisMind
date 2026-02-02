@@ -203,7 +203,9 @@ def evaluate_overrides(
     if override := check_competitividade_critica(spread_adjusted):
         active.append(override)
 
-    if override := check_chicago_especulativo(is_speculative_spike, narrativa_confirmada):
+    if override := check_chicago_especulativo(
+        is_speculative_spike, narrativa_confirmada
+    ):
         active.append(override)
 
     active.sort(key=lambda o: o.priority)

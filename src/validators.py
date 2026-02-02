@@ -29,7 +29,7 @@ def validate_range(value: Any, spec: ColumnSpec) -> ValidationResult:
                 is_valid=False,
                 issue_type="missing",
                 message=f"{spec.name} é obrigatório",
-                severity="error"
+                severity="error",
             )
         return ValidationResult(is_valid=True)
 
@@ -40,7 +40,7 @@ def validate_range(value: Any, spec: ColumnSpec) -> ValidationResult:
             is_valid=False,
             issue_type="validation_error",
             message=f"{spec.name}: valor não numérico '{value}'",
-            severity="error"
+            severity="error",
         )
 
     if spec.min_val is not None and num_val < spec.min_val:
@@ -48,7 +48,7 @@ def validate_range(value: Any, spec: ColumnSpec) -> ValidationResult:
             is_valid=False,
             issue_type="out_of_range",
             message=f"{spec.name}={num_val} < min={spec.min_val}",
-            severity="warning"
+            severity="warning",
         )
 
     if spec.max_val is not None and num_val > spec.max_val:
@@ -56,20 +56,24 @@ def validate_range(value: Any, spec: ColumnSpec) -> ValidationResult:
             is_valid=False,
             issue_type="out_of_range",
             message=f"{spec.name}={num_val} > max={spec.max_val}",
-            severity="warning"
+            severity="warning",
         )
 
     return ValidationResult(is_valid=True)
 
 
-def detect_anomaly(column: str, value: float, lookback_days: int = 180) -> ValidationResult:
+def detect_anomaly(
+    column: str, value: float, lookback_days: int = 180
+) -> ValidationResult:
     if value is None:
         return ValidationResult(is_valid=True)
 
     historical = get_historical_data(column, lookback_days)
 
     if len(historical) < 30:
-        logger.debug("Histórico insuficiente para %s (%d registros)", column, len(historical))
+        logger.debug(
+            "Histórico insuficiente para %s (%d registros)", column, len(historical)
+        )
         return ValidationResult(is_valid=True)
 
     try:
@@ -88,13 +92,15 @@ def detect_anomaly(column: str, value: float, lookback_days: int = 180) -> Valid
             is_valid=False,
             issue_type="anomaly",
             message=f"{column}={value:.2f} (z={z_score:.1f}, μ={mean:.2f}, σ={std:.2f})",
-            severity="warning"
+            severity="warning",
         )
 
     return ValidationResult(is_valid=True)
 
 
-def validate_lineup_consistency(lineup_bruto: int | None, lineup_liquido: int | None) -> ValidationResult:
+def validate_lineup_consistency(
+    lineup_bruto: int | None, lineup_liquido: int | None
+) -> ValidationResult:
     if lineup_bruto is None or lineup_liquido is None:
         return ValidationResult(is_valid=True)
 
@@ -103,15 +109,14 @@ def validate_lineup_consistency(lineup_bruto: int | None, lineup_liquido: int | 
             is_valid=False,
             issue_type="validation_error",
             message=f"lineup_liquido ({lineup_liquido}) > lineup_bruto ({lineup_bruto})",
-            severity="error"
+            severity="error",
         )
 
     return ValidationResult(is_valid=True)
 
 
 def validate_cancellation_rate(
-    cancelamentos: int | None,
-    lineup_bruto: int | None
+    cancelamentos: int | None, lineup_bruto: int | None
 ) -> ValidationResult:
     if cancelamentos is None or lineup_bruto is None:
         return ValidationResult(is_valid=True)
@@ -122,7 +127,7 @@ def validate_cancellation_rate(
                 is_valid=False,
                 issue_type="validation_error",
                 message="Cancelamentos positivos com lineup_bruto=0",
-                severity="error"
+                severity="error",
             )
         return ValidationResult(is_valid=True)
 
@@ -132,13 +137,15 @@ def validate_cancellation_rate(
             is_valid=False,
             issue_type="out_of_range",
             message=f"Taxa de cancelamento {rate:.1%} > 100%",
-            severity="error"
+            severity="error",
         )
 
     return ValidationResult(is_valid=True)
 
 
-def validate_row(row_data: dict[str, Any], row_date: date) -> tuple[bool, list[ValidationResult]]:
+def validate_row(
+    row_data: dict[str, Any], row_date: date
+) -> tuple[bool, list[ValidationResult]]:
     issues: list[ValidationResult] = []
     has_critical = False
 
@@ -150,33 +157,42 @@ def validate_row(row_data: dict[str, Any], row_date: date) -> tuple[bool, list[V
         if not result.is_valid:
             issues.append(result)
             log_quality_issue(
-                row_date, spec.name, result.issue_type or "unknown",
-                value, f"[{spec.min_val}, {spec.max_val}]", result.severity
+                row_date,
+                spec.name,
+                result.issue_type or "unknown",
+                value,
+                f"[{spec.min_val}, {spec.max_val}]",
+                result.severity,
             )
             if result.severity == "critical":
                 has_critical = True
 
     lineup_result = validate_lineup_consistency(
-        row_data.get("lineup_bruto"),
-        row_data.get("lineup_liquido")
+        row_data.get("lineup_bruto"), row_data.get("lineup_liquido")
     )
     if not lineup_result.is_valid:
         issues.append(lineup_result)
         log_quality_issue(
-            row_date, "lineup", lineup_result.issue_type or "unknown",
+            row_date,
+            "lineup",
+            lineup_result.issue_type or "unknown",
             f"bruto={row_data.get('lineup_bruto')}, liq={row_data.get('lineup_liquido')}",
-            "liquido <= bruto", lineup_result.severity
+            "liquido <= bruto",
+            lineup_result.severity,
         )
 
     cancel_result = validate_cancellation_rate(
-        row_data.get("cancelamentos_7d"),
-        row_data.get("lineup_bruto")
+        row_data.get("cancelamentos_7d"), row_data.get("lineup_bruto")
     )
     if not cancel_result.is_valid:
         issues.append(cancel_result)
         log_quality_issue(
-            row_date, "cancelamentos_7d", cancel_result.issue_type or "unknown",
-            row_data.get("cancelamentos_7d"), "0-100%", cancel_result.severity
+            row_date,
+            "cancelamentos_7d",
+            cancel_result.issue_type or "unknown",
+            row_data.get("cancelamentos_7d"),
+            "0-100%",
+            cancel_result.severity,
         )
 
     anomaly_columns = ["premium_paranagua", "chicago_front", "usd_brl", "fob_us_gulf"]
@@ -186,9 +202,7 @@ def validate_row(row_data: dict[str, Any], row_date: date) -> tuple[bool, list[V
             anomaly_result = detect_anomaly(col, float(value))
             if not anomaly_result.is_valid:
                 issues.append(anomaly_result)
-                log_quality_issue(
-                    row_date, col, "anomaly", value, "4σ", "warning"
-                )
+                log_quality_issue(row_date, col, "anomaly", value, "4σ", "warning")
 
     return (not has_critical, issues)
 

@@ -30,7 +30,7 @@ with col_inputs:
             max_value=25.0,
             value=5.0,
             step=1.0,
-            help="Percentage variation of net line-up vs previous week"
+            help="Percentage variation of net line-up vs previous week",
         )
 
         st.markdown("#### Premium")
@@ -40,7 +40,7 @@ with col_inputs:
             max_value=100.0,
             value=50.0,
             step=5.0,
-            help="Current premium position vs historical for same regime"
+            help="Current premium position vs historical for same regime",
         )
 
         st.markdown("#### Competitiveness")
@@ -50,7 +50,7 @@ with col_inputs:
             max_value=30.0,
             value=0.0,
             step=1.0,
-            help="FOB Paranagua - FOB US Gulf (freight adjusted). Positive = Brazil more expensive"
+            help="FOB Paranagua - FOB US Gulf (freight adjusted). Positive = Brazil more expensive",
         )
 
     with tab2:
@@ -61,7 +61,7 @@ with col_inputs:
             max_value=2.0,
             value=0.0,
             step=0.1,
-            help="Export pace vs 5-year average for same week"
+            help="Export pace vs 5-year average for same week",
         )
 
         st.markdown("#### FX Rate")
@@ -71,7 +71,7 @@ with col_inputs:
             max_value=5.0,
             value=0.0,
             step=0.1,
-            help="Dollar variation. Positive = weaker real"
+            help="Dollar variation. Positive = weaker real",
         )
 
         st.markdown("#### Chicago")
@@ -81,20 +81,20 @@ with col_inputs:
             max_value=100.0,
             value=50.0,
             step=5.0,
-            help="Chicago position vs 180-day history"
+            help="Chicago position vs 180-day history",
         )
 
         chicago_spike = st.checkbox(
             "Speculative Spike (>5% in 5d)",
             value=False,
-            help="Check if Chicago rose more than 5% in 5 days"
+            help="Check if Chicago rose more than 5% in 5 days",
         )
 
         st.markdown("#### Logistics")
         logistics_active = st.checkbox(
             "Logistics Flag Active",
             value=False,
-            help="Activate in case of strike, port congestion, etc."
+            help="Activate in case of strike, port congestion, etc.",
         )
 
         logistics_reason = None
@@ -102,7 +102,7 @@ with col_inputs:
             logistics_reason = st.text_input(
                 "Reason",
                 value="Port congestion",
-                help="Describe the logistics restriction reason"
+                help="Describe the logistics restriction reason",
             )
 
         narrativa_confirmada = False
@@ -110,7 +110,7 @@ with col_inputs:
             narrativa_confirmada = st.checkbox(
                 "Confirmed Narrative",
                 value=False,
-                help="Check if the movement has fundamentals (drought, war, etc.)"
+                help="Check if the movement has fundamentals (drought, war, etc.)",
             )
 
     with tab3:
@@ -212,59 +212,72 @@ with col_results:
         "forte": "STRONG",
         "neutro": "NEUTRAL",
         "fraco": "WEAK",
-        "muito_fraco": "VERY WEAK"
+        "muito_fraco": "VERY WEAK",
     }
-    classification_display = classification_map.get(report.classificacao, report.classificacao.upper())
+    classification_display = classification_map.get(
+        report.classificacao, report.classificacao.upper()
+    )
 
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div style="background: {bg}; padding: 2rem; border-radius: 16px; text-align: center; margin-bottom: 1rem;">
         <div style="font-size: 4rem; font-weight: 700; color: {color};">{score:.0f}</div>
         <div style="font-size: 1.2rem; color: {color}; text-transform: uppercase;">{classification_display}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     col_a, col_b = st.columns(2)
 
-    acao_map = {"aumentar_forte": "STRONG INCREASE", "aumentar": "INCREASE", "manter": "HOLD", "reduzir": "REDUCE", "reduzir_forte": "STRONG REDUCE"}
+    acao_map = {
+        "aumentar_forte": "STRONG INCREASE",
+        "aumentar": "INCREASE",
+        "manter": "HOLD",
+        "reduzir": "REDUCE",
+        "reduzir_forte": "STRONG REDUCE",
+    }
 
     with col_a:
-        acao = report.recomendacao_fisica['acao']
+        acao = report.recomendacao_fisica["acao"]
         acao_display = acao_map.get(acao, acao.upper())
-        if 'aumentar' in acao:
+        if "aumentar" in acao:
             st.success(f"**PHYSICAL:** {acao_display}")
-        elif 'reduzir' in acao:
+        elif "reduzir" in acao:
             st.error(f"**PHYSICAL:** {acao_display}")
         else:
             st.warning(f"**PHYSICAL:** {acao_display}")
         st.caption(f"Sizing: {report.recomendacao_fisica['sizing_pct']:+.0f}%")
 
     with col_b:
-        acao = report.recomendacao_hedge['acao']
+        acao = report.recomendacao_hedge["acao"]
         acao_display = acao_map.get(acao, acao.upper())
-        if 'aumentar' in acao:
+        if "aumentar" in acao:
             st.success(f"**HEDGE:** {acao_display}")
-        elif 'reduzir' in acao:
+        elif "reduzir" in acao:
             st.error(f"**HEDGE:** {acao_display}")
         else:
             st.warning(f"**HEDGE:** {acao_display}")
         st.caption(f"Delta: {report.recomendacao_hedge['delta_pp']:+.0f}pp")
 
     override_names = {
-        'logistica': 'Logistics',
-        'queda_conjunta': 'Joint Drop',
-        'armadilha_premio': 'Premium Trap',
-        'competitividade_critica': 'Critical Competitiveness',
-        'chicago_especulativo': 'Speculative Chicago'
+        "logistica": "Logistics",
+        "queda_conjunta": "Joint Drop",
+        "armadilha_premio": "Premium Trap",
+        "competitividade_critica": "Critical Competitiveness",
+        "chicago_especulativo": "Speculative Chicago",
     }
 
     if report.overrides_ativos:
         st.markdown("---")
         st.markdown("### Active Overrides")
         for ov in report.overrides_ativos:
-            display_name = override_names.get(ov, ov.upper().replace('_', ' '))
+            display_name = override_names.get(ov, ov.upper().replace("_", " "))
             st.error(f"**{display_name}**")
         if report.override_dominante:
-            dominant_display = override_names.get(report.override_dominante, report.override_dominante)
+            dominant_display = override_names.get(
+                report.override_dominante, report.override_dominante
+            )
             st.caption(f"Dominant override: {dominant_display}")
 
     if report.modulacao_aplicada:
@@ -275,11 +288,23 @@ with col_results:
     st.markdown("---")
     st.markdown("### Components Breakdown")
 
-    component_names = {'lineup': 'Lineup', 'premio': 'Premium', 'competitividade': 'Competitiveness', 'demanda': 'Demand', 'cambio': 'FX Rate'}
+    component_names = {
+        "lineup": "Lineup",
+        "premio": "Premium",
+        "competitividade": "Competitiveness",
+        "demanda": "Demand",
+        "cambio": "FX Rate",
+    }
 
     for name, data in report.componentes.items():
-        score_val = data['score']
-        weights = {'lineup': 30, 'premio': 25, 'competitividade': 20, 'demanda': 15, 'cambio': 10}
+        score_val = data["score"]
+        weights = {
+            "lineup": 30,
+            "premio": 25,
+            "competitividade": 20,
+            "demanda": 15,
+            "cambio": 10,
+        }
         weight = weights.get(name, 0)
         contribution = score_val * weight / 100
 

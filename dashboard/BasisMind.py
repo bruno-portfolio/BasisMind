@@ -7,7 +7,8 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-st.markdown("""
+st.markdown(
+    """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -111,55 +112,75 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
-st.sidebar.markdown("""
+st.sidebar.markdown(
+    """
 <div style="text-align: center; padding: 1rem 0 2rem 0;">
     <h1 style="color: white; margin: 0; font-size: 1.8rem;">🌾 BasisMind</h1>
     <p style="color: #a0aec0; margin: 0.3rem 0 0 0; font-size: 0.85rem;">Grain Trading Intelligence</p>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
-st.markdown("""
+st.markdown(
+    """
 <div class="main-header">
     <h1>🌾 BasisMind</h1>
     <p>Decision Intelligence for Physical Grain Trading</p>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.markdown("""
+    st.markdown(
+        """
     <div class="metric-card">
         <div class="metric-label">Components</div>
         <div class="metric-value">5</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col2:
-    st.markdown("""
+    st.markdown(
+        """
     <div class="metric-card">
         <div class="metric-label">Overrides</div>
         <div class="metric-value">5</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col3:
-    st.markdown("""
+    st.markdown(
+        """
     <div class="metric-card">
         <div class="metric-label">Modules</div>
         <div class="metric-value">12</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col4:
-    st.markdown("""
+    st.markdown(
+        """
     <div class="metric-card">
         <div class="metric-label">Accuracy</div>
         <div class="metric-value">100%</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -168,7 +189,8 @@ st.markdown("## Overview")
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    st.markdown("""
+    st.markdown(
+        """
     **BasisMind** transforms scattered market signals into **consistent** and
     **auditable** recommendations for physical soybean trading operations.
 
@@ -182,10 +204,12 @@ with col1:
     | **Hedge** | Increase Chicago hedge, hold, or reduce? |
 
     Every recommendation includes a **traceable justification** showing which signals drove the decision.
-    """)
+    """
+    )
 
 with col2:
-    st.markdown("""
+    st.markdown(
+        """
     ### Principles
 
     - Consistency over intuition
@@ -193,17 +217,22 @@ with col2:
     - Explicit rules
     - No price prediction
     - Complements human judgment
-    """)
+    """
+    )
 
 st.markdown("<br>", unsafe_allow_html=True)
 
 st.markdown("## System Architecture")
 
-st.markdown("""
+st.markdown(
+    """
 <div class="arch-box">
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
-st.code("""
+st.code(
+    """
 ┌─────────────────────────────────────────────────────────────────────┐
 │                          MARKET INPUTS                              │
 │   Premium │ Lineup │ Competitiveness │ FX Rate │ Demand │ Chicago  │
@@ -239,7 +268,9 @@ st.code("""
 │                       DECISION OUTPUT                               │
 │      Physical Recommendation │ Hedge Recommendation │ Justification │
 └─────────────────────────────────────────────────────────────────────┘
-""", language=None)
+""",
+    language=None,
+)
 
 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -250,74 +281,93 @@ st.markdown("## Features")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.markdown("""
+    st.markdown(
+        """
     <div class="feature-card">
         <div class="feature-icon">📊</div>
         <h4>Weighted Scoring</h4>
         <p>Combines 5 market indicators into a single [0-100]
         score with calibrated weights.</p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col2:
-    st.markdown("""
+    st.markdown(
+        """
     <div class="feature-card">
         <div class="feature-icon">⚡</div>
         <h4>Override Rules</h4>
         <p>5 rules that dominate scoring in critical
         market situations.</p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col3:
-    st.markdown("""
+    st.markdown(
+        """
     <div class="feature-card">
         <div class="feature-icon">📈</div>
         <h4>Book Modulation</h4>
         <p>Adjusts recommendations based on current
         position and exposure limits.</p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 st.markdown("<br>", unsafe_allow_html=True)
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.markdown("""
+    st.markdown(
+        """
     <div class="feature-card">
         <div class="feature-icon">🔍</div>
         <h4>Full Traceability</h4>
         <p>Every decision includes detailed justification
         with the signals that drove it.</p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col2:
-    st.markdown("""
+    st.markdown(
+        """
     <div class="feature-card">
         <div class="feature-icon">🌡️</div>
         <h4>Seasonality</h4>
         <p>Premium normalization by regime (crop vs off-season)
         eliminates incorrect comparisons.</p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col3:
-    st.markdown("""
+    st.markdown(
+        """
     <div class="feature-card">
         <div class="feature-icon">🎛️</div>
         <h4>Simulator</h4>
         <p>Test custom scenarios and see how the engine
         responds in real-time.</p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 st.markdown("<br>", unsafe_allow_html=True)
 
 st.markdown("## Navigation")
 
-st.info("""
+st.info(
+    """
 Use the **sidebar** to navigate between pages:
 
 - **Market Data** - View simulated historical data
@@ -325,11 +375,15 @@ Use the **sidebar** to navigate between pages:
 - **Simulator** - Create your own scenarios and test the engine
 - **Analysis** - Sensitivity analysis and components
 - **Documentation** - Complete technical documentation
-""")
+"""
+)
 
 st.markdown("---")
-st.markdown("""
+st.markdown(
+    """
 <div style="text-align: center; color: #666; padding: 1rem;">
     <p>Built as a portfolio project | Python - Streamlit - Data Engineering - Trading Systems</p>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)

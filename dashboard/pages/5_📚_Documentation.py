@@ -4,12 +4,13 @@ st.set_page_config(page_title="Documentation | BasisMind", page_icon="📚", lay
 
 st.title("📚 Technical Documentation")
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "Overview", "Components", "Overrides", "Architecture", "API"
-])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(
+    ["Overview", "Components", "Overrides", "Architecture", "API"]
+)
 
 with tab1:
-    st.markdown("""
+    st.markdown(
+        """
     ## Overview
 
     The **Decision Engine** is a decision support system for physical grain (soybean)
@@ -83,11 +84,13 @@ with tab1:
        ├── Hedge Recommendation + Delta
        └── Traceable justification
     ```
-    """)
+    """
+    )
 
 
 with tab2:
-    st.markdown("""
+    st.markdown(
+        """
     ## Score Components
 
     The physical score is calculated as a weighted average of 5 components:
@@ -184,11 +187,13 @@ with tab2:
     ```
     - Strong real (negative variation) = High score
     - Weak real (positive variation) = Low score
-    """)
+    """
+    )
 
 
 with tab3:
-    st.markdown("""
+    st.markdown(
+        """
     ## Override Rules
 
     Overrides are conditions that **dominate** scoring, representing market situations
@@ -279,11 +284,13 @@ with tab3:
     **Interpretation:** Speculative move with negative asymmetry.
 
     **Action:** HOLD physical + STRONG INCREASE HEDGE (+20pp)
-    """)
+    """
+    )
 
 
 with tab4:
-    st.markdown("""
+    st.markdown(
+        """
     ## System Architecture
 
     ### Module Structure
@@ -386,11 +393,13 @@ with tab4:
         overrides_ativos: list
         justificativa: str
     ```
-    """)
+    """
+    )
 
 
 with tab5:
-    st.markdown("""
+    st.markdown(
+        """
     ## Usage API
 
     ### Basic Usage
@@ -518,10 +527,13 @@ with tab5:
       "justificativa": "Strong physical (score 68) | ..."
     }
     ```
-    """)
+    """
+    )
 
 st.markdown("---")
-st.info("""
+st.info(
+    """
 **Tip:** Use the Simulator page to test different scenarios
 and see how the engine responds in real-time.
-""")
+"""
+)

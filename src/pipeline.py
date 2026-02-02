@@ -32,7 +32,6 @@ class PipelineResult:
 
 
 class DataSource(ABC):
-
     @abstractmethod
     def fetch(self, target_date: date) -> dict[str, Any]:
         pass
@@ -43,7 +42,6 @@ class DataSource(ABC):
 
 
 class ManualDataSource(DataSource):
-
     def __init__(self, data: dict[str, Any]) -> None:
         self._data = data
 
@@ -55,7 +53,6 @@ class ManualDataSource(DataSource):
 
 
 class CSVDataSource(DataSource):
-
     def __init__(self, filepath: str) -> None:
         self._filepath = filepath
         self._cache: dict[date, dict[str, Any]] = {}
@@ -63,11 +60,12 @@ class CSVDataSource(DataSource):
 
     def _load_cache(self) -> None:
         import csv
+
         try:
-            with open(self._filepath, 'r', encoding='utf-8') as f:
+            with open(self._filepath, "r", encoding="utf-8") as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    row_date = datetime.strptime(row['date'], '%Y-%m-%d').date()
+                    row_date = datetime.strptime(row["date"], "%Y-%m-%d").date()
                     self._cache[row_date] = self._parse_row(row)
         except FileNotFoundError:
             logger.warning("CSV não encontrado: %s", self._filepath)
@@ -82,14 +80,14 @@ class CSVDataSource(DataSource):
             return int(val) if val.strip() else None
 
         return {
-            'premium_paranagua': to_decimal(row.get('premium_paranagua', '')),
-            'chicago_front': to_decimal(row.get('chicago_front', '')),
-            'usd_brl': to_decimal(row.get('usd_brl', '')),
-            'fob_us_gulf': to_decimal(row.get('fob_us_gulf', '')),
-            'lineup_bruto': to_int(row.get('lineup_bruto', '')),
-            'lineup_liquido': to_int(row.get('lineup_liquido', '')),
-            'cancelamentos_7d': to_int(row.get('cancelamentos_7d', '')),
-            'exports_weekly_tons': to_decimal(row.get('exports_weekly_tons', '')),
+            "premium_paranagua": to_decimal(row.get("premium_paranagua", "")),
+            "chicago_front": to_decimal(row.get("chicago_front", "")),
+            "usd_brl": to_decimal(row.get("usd_brl", "")),
+            "fob_us_gulf": to_decimal(row.get("fob_us_gulf", "")),
+            "lineup_bruto": to_int(row.get("lineup_bruto", "")),
+            "lineup_liquido": to_int(row.get("lineup_liquido", "")),
+            "cancelamentos_7d": to_int(row.get("cancelamentos_7d", "")),
+            "exports_weekly_tons": to_decimal(row.get("exports_weekly_tons", "")),
         }
 
     def fetch(self, target_date: date) -> dict[str, Any]:
@@ -102,7 +100,6 @@ class CSVDataSource(DataSource):
 
 
 class DataPipeline:
-
     def __init__(self, sources: list[DataSource]) -> None:
         if not sources:
             raise ValueError("Pelo menos uma fonte de dados é necessária")
@@ -133,11 +130,18 @@ class DataPipeline:
                 records_failed=1,
                 missing_rate=1.0,
                 anomalies_detected=0,
-                errors=errors
+                errors=errors,
             )
             log_pipeline_run(
-                target_date, "failed", 0, 1, 1.0, 0,
-                fetch_error, started_at, datetime.now().isoformat()
+                target_date,
+                "failed",
+                0,
+                1,
+                1.0,
+                0,
+                fetch_error,
+                started_at,
+                datetime.now().isoformat(),
             )
             return result
 
@@ -152,20 +156,23 @@ class DataPipeline:
 
         missing_rate = calculate_missing_rate([data])
         if missing_rate > MAX_MISSING_RATE:
-            logger.warning("Missing rate %.1f%% > threshold %.1f%%",
-                         missing_rate * 100, MAX_MISSING_RATE * 100)
+            logger.warning(
+                "Missing rate %.1f%% > threshold %.1f%%",
+                missing_rate * 100,
+                MAX_MISSING_RATE * 100,
+            )
 
         if is_valid:
             row = MarketDataRow(
                 date=target_date,
-                premium_paranagua=data.get('premium_paranagua'),
-                chicago_front=data.get('chicago_front'),
-                usd_brl=data.get('usd_brl'),
-                fob_us_gulf=data.get('fob_us_gulf'),
-                lineup_bruto=data.get('lineup_bruto'),
-                lineup_liquido=data.get('lineup_liquido'),
-                cancelamentos_7d=data.get('cancelamentos_7d'),
-                exports_weekly_tons=data.get('exports_weekly_tons'),
+                premium_paranagua=data.get("premium_paranagua"),
+                chicago_front=data.get("chicago_front"),
+                usd_brl=data.get("usd_brl"),
+                fob_us_gulf=data.get("fob_us_gulf"),
+                lineup_bruto=data.get("lineup_bruto"),
+                lineup_liquido=data.get("lineup_liquido"),
+                cancelamentos_7d=data.get("cancelamentos_7d"),
+                exports_weekly_tons=data.get("exports_weekly_tons"),
             )
             insert_market_data(row)
             status = "success" if not errors else "partial"
@@ -180,13 +187,19 @@ class DataPipeline:
             records_failed=records_failed,
             missing_rate=missing_rate,
             anomalies_detected=anomalies,
-            errors=errors
+            errors=errors,
         )
 
         log_pipeline_run(
-            target_date, status, 1, records_failed, missing_rate,
-            anomalies, "; ".join(errors) if errors else None,
-            started_at, datetime.now().isoformat()
+            target_date,
+            status,
+            1,
+            records_failed,
+            missing_rate,
+            anomalies,
+            "; ".join(errors) if errors else None,
+            started_at,
+            datetime.now().isoformat(),
         )
 
         return result
@@ -211,7 +224,7 @@ def run_daily_pipeline(sources: list[DataSource] | None = None) -> PipelineResul
             records_failed=0,
             missing_rate=1.0,
             anomalies_detected=0,
-            errors=["Nenhuma fonte de dados configurada"]
+            errors=["Nenhuma fonte de dados configurada"],
         )
 
     pipeline = DataPipeline(sources)
@@ -221,7 +234,7 @@ def run_daily_pipeline(sources: list[DataSource] | None = None) -> PipelineResul
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
     init_database()
     logger.info("Pipeline inicializado. Configure fontes de dados para execução.")

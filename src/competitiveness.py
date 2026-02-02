@@ -64,10 +64,7 @@ def calculate_spread_fob(fob_paranagua: float, fob_us_gulf: float) -> float:
     return round(fob_paranagua - fob_us_gulf, 2)
 
 
-def calculate_spread_adjusted(
-    spread_fob: float,
-    freight_adjustment: float
-) -> float:
+def calculate_spread_adjusted(spread_fob: float, freight_adjustment: float) -> float:
     return round(spread_fob + freight_adjustment, 2)
 
 
@@ -79,8 +76,7 @@ def classify_competitiveness(spread_adjusted: float) -> CompetitivenessClass:
 
 
 def is_freight_abnormal(
-    current_freight: float,
-    historical_freight: list[float]
+    current_freight: float, historical_freight: list[float]
 ) -> bool:
     if len(historical_freight) < 10:
         return False
@@ -97,7 +93,7 @@ def compute_competitiveness(
     fob_paranagua: float,
     fob_us_gulf: float,
     current_freight: float | None = None,
-    historical_freight: list[float] | None = None
+    historical_freight: list[float] | None = None,
 ) -> CompetitivenessResult:
     spread_fob = calculate_spread_fob(fob_paranagua, fob_us_gulf)
     freight_adjustment = get_freight_adjustment(dt.month)
@@ -111,8 +107,7 @@ def compute_competitiveness(
         if freight_abnormal:
             weight_modifier = 0.5
             logger.warning(
-                "Frete anormal detectado para %s: peso reduzido para 50%%",
-                dt
+                "Frete anormal detectado para %s: peso reduzido para 50%%", dt
             )
 
     return CompetitivenessResult(
@@ -124,7 +119,7 @@ def compute_competitiveness(
         spread_adjusted=spread_adjusted,
         classification=classification,
         freight_is_abnormal=freight_abnormal,
-        weight_modifier=weight_modifier
+        weight_modifier=weight_modifier,
     )
 
 

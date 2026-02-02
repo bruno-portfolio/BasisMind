@@ -66,7 +66,7 @@ def compute_cambio_metrics(
     dt: date,
     usd_brl: float,
     usd_brl_5d_ago: float | None = None,
-    usd_brl_20d_ago: float | None = None
+    usd_brl_20d_ago: float | None = None,
 ) -> CambioMetrics:
     var_5d = calculate_var_percent(usd_brl, usd_brl_5d_ago)
     var_20d = calculate_var_percent(usd_brl, usd_brl_20d_ago)
@@ -79,7 +79,7 @@ def compute_cambio_metrics(
         var_5d=var_5d,
         var_20d=var_20d,
         signal=signal,
-        modulation=modulation
+        modulation=modulation,
     )
 
 
@@ -111,8 +111,7 @@ DEMAND_Z_THRESHOLDS: dict[DemandSignal, tuple[float, float]] = {
 
 
 def calculate_z_pace(
-    exports_weekly: float,
-    historical_same_week: list[float]
+    exports_weekly: float, historical_same_week: list[float]
 ) -> tuple[float | None, float | None, float | None]:
     if len(historical_same_week) < 3:
         return None, None, None
@@ -137,9 +136,7 @@ def classify_demand_signal(z_pace: float | None) -> DemandSignal | None:
 
 
 def compute_demand_metrics(
-    dt: date,
-    exports_weekly: float,
-    historical_same_week_5y: list[float]
+    dt: date, exports_weekly: float, historical_same_week_5y: list[float]
 ) -> DemandMetrics:
     avg, std, z_pace = calculate_z_pace(exports_weekly, historical_same_week_5y)
     signal = classify_demand_signal(z_pace)
@@ -150,7 +147,7 @@ def compute_demand_metrics(
         mean_5y=avg,
         std_5y=std,
         z_pace=z_pace,
-        signal=signal
+        signal=signal,
     )
 
 
@@ -170,14 +167,18 @@ def compute_logistics_flag(
     wait_time_days: float | None = None,
     wait_time_weeks_above: int = 0,
     loading_rate: float | None = None,
-    manual_event: str | None = None
+    manual_event: str | None = None,
 ) -> LogisticsFlag:
     reasons = []
 
-    if (wait_time_days is not None and
-        wait_time_days > WAIT_TIME_THRESHOLD_DAYS and
-        wait_time_weeks_above >= WAIT_TIME_CONSECUTIVE_WEEKS):
-        reasons.append(f"espera_navios>{WAIT_TIME_THRESHOLD_DAYS}d_por_{wait_time_weeks_above}sem")
+    if (
+        wait_time_days is not None
+        and wait_time_days > WAIT_TIME_THRESHOLD_DAYS
+        and wait_time_weeks_above >= WAIT_TIME_CONSECUTIVE_WEEKS
+    ):
+        reasons.append(
+            f"espera_navios>{WAIT_TIME_THRESHOLD_DAYS}d_por_{wait_time_weeks_above}sem"
+        )
 
     if loading_rate is not None and loading_rate < LOADING_RATE_THRESHOLD:
         reasons.append(f"taxa_embarque={loading_rate*100:.0f}%<70%")
@@ -190,7 +191,7 @@ def compute_logistics_flag(
     return LogisticsFlag(
         is_active=is_active,
         reason="; ".join(reasons) if reasons else None,
-        manual_event=manual_event
+        manual_event=manual_event,
     )
 
 
@@ -243,7 +244,7 @@ def compute_chicago_metrics(
     dt: date,
     chicago_front: float,
     historical_180d: list[float],
-    chicago_5d_ago: float | None = None
+    chicago_5d_ago: float | None = None,
 ) -> ChicagoMetrics:
     percentile = calculate_percentile(chicago_front, historical_180d)
     signal = classify_chicago_signal(percentile)
@@ -260,5 +261,5 @@ def compute_chicago_metrics(
         percentile=percentile,
         signal=signal,
         var_5d=var_5d,
-        is_speculative_spike=is_speculative
+        is_speculative_spike=is_speculative,
     )

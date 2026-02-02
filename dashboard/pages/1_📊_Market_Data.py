@@ -11,7 +11,8 @@ from mock_generator import generate_3y_history, MarketDataGenerator
 
 st.set_page_config(page_title="Market Data | BasisMind", page_icon="📊", layout="wide")
 
-st.markdown("""
+st.markdown(
+    """
 <style>
     .stat-card {
         background: white;
@@ -37,41 +38,51 @@ st.markdown("""
     .delta-up { background: #d4edda; color: #155724; }
     .delta-down { background: #f8d7da; color: #721c24; }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 st.title("📊 Market Data")
 st.markdown("Visualization of simulated historical soybean market data.")
+
 
 @st.cache_data
 def load_data():
     return generate_3y_history(seed=42)
 
+
 with st.spinner("Loading historical data..."):
     history = load_data()
 
-st.markdown(f"""
+st.markdown(
+    f"""
 **Period:** {history[0].date} to {history[-1].date} ({len(history)} business days)
-""")
+"""
+)
 
-tab1, tab2, tab3, tab4 = st.tabs(["📈 Premium", "🚢 Line-up", "💹 Chicago & FX", "📊 Statistics"])
+tab1, tab2, tab3, tab4 = st.tabs(
+    ["📈 Premium", "🚢 Line-up", "💹 Chicago & FX", "📊 Statistics"]
+)
 
 with tab1:
     st.markdown("### FOB Paranagua Premium")
-    st.markdown("The premium represents the difference between local FOB price and the Chicago reference.")
+    st.markdown(
+        "The premium represents the difference between local FOB price and the Chicago reference."
+    )
 
     dates = [d.date for d in history]
     premiums = [d.premium_paranagua for d in history]
 
     import pandas as pd
-    df_premium = pd.DataFrame({
-        'Date': dates,
-        'Premium (¢/bu)': premiums
-    })
-    df_premium.set_index('Date', inplace=True)
+
+    df_premium = pd.DataFrame({"Date": dates, "Premium (¢/bu)": premiums})
+    df_premium.set_index("Date", inplace=True)
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("Current", f"{premiums[-1]:.0f} ¢/bu", f"{premiums[-1] - premiums[-5]:.1f}")
+        st.metric(
+            "Current", f"{premiums[-1]:.0f} ¢/bu", f"{premiums[-1] - premiums[-5]:.1f}"
+        )
     with col2:
         st.metric("Minimum", f"{min(premiums):.0f} ¢/bu")
     with col3:
@@ -84,8 +95,12 @@ with tab1:
     st.markdown("#### Analysis by Regime")
     col1, col2 = st.columns(2)
 
-    safra_data = [d.premium_paranagua for d in history if d.date.month in (3,4,5,6,7)]
-    entressafra_data = [d.premium_paranagua for d in history if d.date.month not in (3,4,5,6,7)]
+    safra_data = [
+        d.premium_paranagua for d in history if d.date.month in (3, 4, 5, 6, 7)
+    ]
+    entressafra_data = [
+        d.premium_paranagua for d in history if d.date.month not in (3, 4, 5, 6, 7)
+    ]
 
     with col1:
         st.markdown("**🌱 Crop Season (Mar-Jul)**")
@@ -94,8 +109,12 @@ with tab1:
 
     with col2:
         st.markdown("**🍂 Off-Season (Aug-Feb)**")
-        st.markdown(f"- Average: {sum(entressafra_data)/len(entressafra_data):.1f} ¢/bu")
-        st.markdown(f"- Min/Max: {min(entressafra_data):.0f} - {max(entressafra_data):.0f}")
+        st.markdown(
+            f"- Average: {sum(entressafra_data)/len(entressafra_data):.1f} ¢/bu"
+        )
+        st.markdown(
+            f"- Min/Max: {min(entressafra_data):.0f} - {max(entressafra_data):.0f}"
+        )
 
 
 with tab2:
@@ -108,28 +127,36 @@ with tab2:
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("Gross Current", f"{lineup_bruto[-1]} ships", f"{lineup_bruto[-1] - lineup_bruto[-5]:+d}")
+        st.metric(
+            "Gross Current",
+            f"{lineup_bruto[-1]} ships",
+            f"{lineup_bruto[-1] - lineup_bruto[-5]:+d}",
+        )
     with col2:
         st.metric("Net Current", f"{lineup_liquido[-1]} ships")
     with col3:
         st.metric("Cancellations 7d", f"{cancelamentos[-1]} ships")
     with col4:
-        taxa_cancel = (cancelamentos[-1] / lineup_bruto[-1] * 100) if lineup_bruto[-1] > 0 else 0
+        taxa_cancel = (
+            (cancelamentos[-1] / lineup_bruto[-1] * 100) if lineup_bruto[-1] > 0 else 0
+        )
         st.metric("Cancel Rate", f"{taxa_cancel:.1f}%")
 
-    df_lineup = pd.DataFrame({
-        'Date': dates,
-        'Gross': lineup_bruto,
-        'Net': lineup_liquido,
-    })
-    df_lineup.set_index('Date', inplace=True)
+    df_lineup = pd.DataFrame(
+        {
+            "Date": dates,
+            "Gross": lineup_bruto,
+            "Net": lineup_liquido,
+        }
+    )
+    df_lineup.set_index("Date", inplace=True)
 
     st.line_chart(df_lineup, use_container_width=True, height=400)
 
     st.markdown("#### Cancellation Rate Over Time")
     taxas = [(c / b * 100) if b > 0 else 0 for b, c in zip(lineup_bruto, cancelamentos)]
-    df_taxa = pd.DataFrame({'Date': dates, 'Rate (%)': taxas})
-    df_taxa.set_index('Date', inplace=True)
+    df_taxa = pd.DataFrame({"Date": dates, "Rate (%)": taxas})
+    df_taxa.set_index("Date", inplace=True)
     st.area_chart(df_taxa, use_container_width=True, height=200)
 
 
@@ -141,19 +168,25 @@ with tab3:
     with col1:
         st.markdown("#### CBOT Soybeans (Front Month)")
         chicagos = [d.chicago_front for d in history]
-        st.metric("Current", f"{chicagos[-1]:.0f} ¢/bu", f"{chicagos[-1] - chicagos[-5]:.1f}")
+        st.metric(
+            "Current", f"{chicagos[-1]:.0f} ¢/bu", f"{chicagos[-1] - chicagos[-5]:.1f}"
+        )
 
-        df_chicago = pd.DataFrame({'Date': dates, 'Chicago (¢/bu)': chicagos})
-        df_chicago.set_index('Date', inplace=True)
+        df_chicago = pd.DataFrame({"Date": dates, "Chicago (¢/bu)": chicagos})
+        df_chicago.set_index("Date", inplace=True)
         st.line_chart(df_chicago, use_container_width=True, height=300)
 
     with col2:
         st.markdown("#### USD/BRL")
         cambios = [d.usd_brl for d in history]
-        st.metric("Current", f"R$ {cambios[-1]:.2f}", f"{((cambios[-1]/cambios[-5])-1)*100:.2f}%")
+        st.metric(
+            "Current",
+            f"R$ {cambios[-1]:.2f}",
+            f"{((cambios[-1]/cambios[-5])-1)*100:.2f}%",
+        )
 
-        df_cambio = pd.DataFrame({'Date': dates, 'USD/BRL': cambios})
-        df_cambio.set_index('Date', inplace=True)
+        df_cambio = pd.DataFrame({"Date": dates, "USD/BRL": cambios})
+        df_cambio.set_index("Date", inplace=True)
         st.line_chart(df_cambio, use_container_width=True, height=300)
 
     st.markdown("#### FOB: Paranagua vs US Gulf")
@@ -161,41 +194,67 @@ with tab3:
     fob_gulf = [d.fob_us_gulf for d in history]
     spreads = [p - g for p, g in zip(fob_pnq, fob_gulf)]
 
-    df_fob = pd.DataFrame({
-        'Date': dates,
-        'Paranagua': fob_pnq,
-        'US Gulf': fob_gulf,
-    })
-    df_fob.set_index('Date', inplace=True)
+    df_fob = pd.DataFrame(
+        {
+            "Date": dates,
+            "Paranagua": fob_pnq,
+            "US Gulf": fob_gulf,
+        }
+    )
+    df_fob.set_index("Date", inplace=True)
     st.line_chart(df_fob, use_container_width=True, height=300)
 
-    st.markdown(f"**Current Spread:** {spreads[-1]:+.1f} USD/ton ({'Brazil more expensive' if spreads[-1] > 0 else 'Brazil cheaper'})")
+    st.markdown(
+        f"**Current Spread:** {spreads[-1]:+.1f} USD/ton ({'Brazil more expensive' if spreads[-1] > 0 else 'Brazil cheaper'})"
+    )
 
 
 with tab4:
     st.markdown("### Descriptive Statistics")
 
     stats_data = {
-        'Variable': ['Premium (¢/bu)', 'Chicago (¢/bu)', 'USD/BRL', 'FOB Paranagua', 'FOB US Gulf', 'Lineup Gross', 'Lineup Net'],
-        'Minimum': [
-            min(premiums), min(chicagos), min(cambios),
-            min(fob_pnq), min(fob_gulf), min(lineup_bruto), min(lineup_liquido)
+        "Variable": [
+            "Premium (¢/bu)",
+            "Chicago (¢/bu)",
+            "USD/BRL",
+            "FOB Paranagua",
+            "FOB US Gulf",
+            "Lineup Gross",
+            "Lineup Net",
         ],
-        'Maximum': [
-            max(premiums), max(chicagos), max(cambios),
-            max(fob_pnq), max(fob_gulf), max(lineup_bruto), max(lineup_liquido)
+        "Minimum": [
+            min(premiums),
+            min(chicagos),
+            min(cambios),
+            min(fob_pnq),
+            min(fob_gulf),
+            min(lineup_bruto),
+            min(lineup_liquido),
         ],
-        'Average': [
-            sum(premiums)/len(premiums), sum(chicagos)/len(chicagos), sum(cambios)/len(cambios),
-            sum(fob_pnq)/len(fob_pnq), sum(fob_gulf)/len(fob_gulf),
-            sum(lineup_bruto)/len(lineup_bruto), sum(lineup_liquido)/len(lineup_liquido)
+        "Maximum": [
+            max(premiums),
+            max(chicagos),
+            max(cambios),
+            max(fob_pnq),
+            max(fob_gulf),
+            max(lineup_bruto),
+            max(lineup_liquido),
+        ],
+        "Average": [
+            sum(premiums) / len(premiums),
+            sum(chicagos) / len(chicagos),
+            sum(cambios) / len(cambios),
+            sum(fob_pnq) / len(fob_pnq),
+            sum(fob_gulf) / len(fob_gulf),
+            sum(lineup_bruto) / len(lineup_bruto),
+            sum(lineup_liquido) / len(lineup_liquido),
         ],
     }
 
     df_stats = pd.DataFrame(stats_data)
-    df_stats['Minimum'] = df_stats['Minimum'].round(2)
-    df_stats['Maximum'] = df_stats['Maximum'].round(2)
-    df_stats['Average'] = df_stats['Average'].round(2)
+    df_stats["Minimum"] = df_stats["Minimum"].round(2)
+    df_stats["Maximum"] = df_stats["Maximum"].round(2)
+    df_stats["Average"] = df_stats["Average"].round(2)
 
     st.dataframe(df_stats, use_container_width=True, hide_index=True)
 
@@ -203,13 +262,15 @@ with tab4:
     st.markdown("Correlation between main market variables.")
 
     corr_data = {
-        '': ['Premium', 'Chicago', 'USD/BRL', 'Lineup'],
-        'Premium': [1.00, 0.45, -0.22, 0.38],
-        'Chicago': [0.45, 1.00, -0.15, 0.28],
-        'USD/BRL': [-0.22, -0.15, 1.00, -0.12],
-        'Lineup': [0.38, 0.28, -0.12, 1.00],
+        "": ["Premium", "Chicago", "USD/BRL", "Lineup"],
+        "Premium": [1.00, 0.45, -0.22, 0.38],
+        "Chicago": [0.45, 1.00, -0.15, 0.28],
+        "USD/BRL": [-0.22, -0.15, 1.00, -0.12],
+        "Lineup": [0.38, 0.28, -0.12, 1.00],
     }
     df_corr = pd.DataFrame(corr_data)
     st.dataframe(df_corr, use_container_width=True, hide_index=True)
 
-    st.info("Data is simulated with realistic soybean market characteristics, including seasonality, correlations, and volatility events.")
+    st.info(
+        "Data is simulated with realistic soybean market characteristics, including seasonality, correlations, and volatility events."
+    )

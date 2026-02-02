@@ -62,12 +62,14 @@ class TriggerCheck:
 
     @property
     def any_triggered(self) -> bool:
-        return any([
-            self.lineup_triggered,
-            self.premium_triggered,
-            self.logistics_triggered,
-            self.chicago_triggered,
-        ])
+        return any(
+            [
+                self.lineup_triggered,
+                self.premium_triggered,
+                self.logistics_triggered,
+                self.chicago_triggered,
+            ]
+        )
 
     @property
     def triggered_reasons(self) -> list[str]:
@@ -299,7 +301,6 @@ def run_decision_engine(
 
 
 class DecisionEngine:
-
     def __init__(self, book: BookState | None = None):
         self._book = book or BookState(
             exposicao_fisica_pct=0.0,

@@ -65,9 +65,7 @@ def classify_premium(percentile: float) -> PremiumClassification:
 
 
 def normalize_premium(
-    dt: date,
-    premium: float,
-    historical_by_regime: list[float]
+    dt: date, premium: float, historical_by_regime: list[float]
 ) -> PremiumResult:
     if premium is None:
         raise ValueError(f"Prêmio nulo para data {dt}")
@@ -77,7 +75,9 @@ def normalize_premium(
     if len(historical_by_regime) < MIN_HISTORICAL_SAMPLES:
         logger.warning(
             "Histórico insuficiente para regime %s: %d amostras (mínimo: %d)",
-            regime, len(historical_by_regime), MIN_HISTORICAL_SAMPLES
+            regime,
+            len(historical_by_regime),
+            MIN_HISTORICAL_SAMPLES,
         )
 
     percentile = calculate_percentile(premium, historical_by_regime)
@@ -89,7 +89,7 @@ def normalize_premium(
         regime=regime,
         percentile=percentile,
         classification=classification,
-        historical_count=len(historical_by_regime)
+        historical_count=len(historical_by_regime),
     )
 
 
