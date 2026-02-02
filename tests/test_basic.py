@@ -1,8 +1,8 @@
 def test_importa_engine():
-      from src import engine
+      import engine
       assert engine is not None
 
 
 def test_importa_scoring():
-      from src import scoring
+      import scoring
       assert scoring is not None
