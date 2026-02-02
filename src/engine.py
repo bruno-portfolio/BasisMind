@@ -21,7 +21,7 @@ from scoring import (
     HedgeRecommendation,
     Intensity,
 )
-from .overrides import (
+from overrides import (
     evaluate_overrides,
     get_override_justification,
     OverrideEvaluation,
