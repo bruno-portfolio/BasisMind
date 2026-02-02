@@ -3,6 +3,6 @@ def test_importa_engine():
       assert engine is not None
 
 
-  def test_importa_scoring():
+def test_importa_scoring():
       from src import scoring
       assert scoring is not None
