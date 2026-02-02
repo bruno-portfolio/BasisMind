@@ -144,7 +144,7 @@ class DataPipeline:
                 datetime.now().isoformat(),
             )
             return result
-
+        assert data is not None
         is_valid, issues = validate_row(data, target_date)
         anomalies = sum(1 for i in issues if i.issue_type == "anomaly")
 
@@ -163,7 +163,6 @@ class DataPipeline:
             )
 
         if is_valid:
-            assert data is not None
             row = MarketDataRow(
                 date=target_date,
                 premium_paranagua=data.get("premium_paranagua"),
