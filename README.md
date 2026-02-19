@@ -14,7 +14,7 @@
 <img width="1419" height="886" alt="image" src="https://github.com/user-attachments/assets/d11f05a9-d2de-4af9-a219-e48514826aa7" />
 <img width="971" height="887" alt="image" src="https://github.com/user-attachments/assets/38161f03-dd7f-476a-8a0c-9fb77ec98b60" />
 
-## 🎯 Overview
+## Overview
 
 The **Decision Engine** standardizes market reading and reduces subjective bias in commodity trading decisions. It formalizes into explicit rules the logic that experienced professionals apply intuitively.
 
@@ -27,7 +27,7 @@ The **Decision Engine** standardizes market reading and reduces subjective bias 
 
 Every recommendation includes a **traceable justification** showing which signals drove the decision.
 
-## ✨ Features
+## Features
 
 - **📊 Weighted Scoring** - Combines 5 market indicators into a single [0-100] score
 - **⚡ Override Rules** - 5 rules that dominate scoring in critical market situations
@@ -73,7 +73,7 @@ Every recommendation includes a **traceable justification** showing which signal
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 
