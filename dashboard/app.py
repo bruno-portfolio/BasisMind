@@ -1,6 +1,6 @@
 import streamlit as st
 
-from ui import inject_css, sidebar_brand
+from ui import AMBER, MUTED, inject_css, sidebar_brand
 
 st.set_page_config(
     page_title="BasisMind — Grain Trading Intelligence",
