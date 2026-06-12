@@ -34,7 +34,6 @@ class CompetitivenessResult:
     spread_adjusted: float
     classification: CompetitivenessClass
     freight_is_abnormal: bool
-    weight_modifier: float
 
 
 FREIGHT_DIFFERENTIAL_MONTHLY: dict[int, float] = {
@@ -115,14 +114,10 @@ def compute_competitiveness(
     classification = classify_competitiveness(spread_adjusted)
 
     freight_abnormal = False
-    weight_modifier = 1.0
     if current_freight is not None and historical_freight:
         freight_abnormal = is_freight_abnormal(current_freight, historical_freight)
         if freight_abnormal:
-            weight_modifier = 0.5
-            logger.warning(
-                "Frete anormal detectado para %s: peso reduzido para 50%%", dt
-            )
+            logger.warning("Frete anormal detectado para %s", dt)
 
     return CompetitivenessResult(
         date=dt,
@@ -133,7 +128,6 @@ def compute_competitiveness(
         spread_adjusted=spread_adjusted,
         classification=classification,
         freight_is_abnormal=freight_abnormal,
-        weight_modifier=weight_modifier,
     )
 
 

@@ -98,6 +98,17 @@ class TestScoreFisico:
         components = ComponentScores(50, 50, 50, 50, 50)
         assert compute_score_fisico(components) == pytest.approx(50.0)
 
+    def test_modificador_de_frete_renormaliza_pesos(self):
+        components = ComponentScores(50, 50, 50, 50, 50)
+        score = compute_score_fisico(components, competitiveness_weight_modifier=0.5)
+        assert score == pytest.approx(50.0)
+
+    def test_modificador_reduz_influencia_da_competitividade(self):
+        components = ComponentScores(0, 0, 100, 0, 0)
+        assert compute_score_fisico(components) == pytest.approx(20.0)
+        reduced = compute_score_fisico(components, competitiveness_weight_modifier=0.5)
+        assert reduced == pytest.approx(100 * 0.10 / 0.90)
+
 
 class TestClassifyScoreFisico:
     @pytest.mark.parametrize(

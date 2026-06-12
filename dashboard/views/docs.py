@@ -82,6 +82,10 @@ Adjusted FOB spread = (FOB Paranaguá − FOB US Gulf) + monthly freight
 differential. `linear_map(spread, +20, -20) → 0–100` — **inverse**: cheap
 Brazil scores high.
 
+When the observed freight deviates more than 2σ from its own history, the
+spread is treated as distorted and this component's weight is halved
+(renormalized across the blend) until freight normalizes.
+
 Freight differential by month (USD/ton):
 
 {FREIGHT_TABLE}
@@ -94,8 +98,9 @@ Z-score of weekly exports vs the 5-year same-week average.
 ### FX — 10%
 
 USD/BRL variation over 5 days. `linear_map(var, +3%, -3%) → 0–100` —
-**inverse**: a strengthening real scores high. Smallest weight: FX modulates
-margin, it doesn't create demand.
+**inverse**: a strengthening real scores high. The logic is supply retention:
+a strong real slows farmer selling, which keeps premiums supported. Smallest
+weight — FX shapes flow at the margin, it doesn't create demand.
 
 ### Missing data
 

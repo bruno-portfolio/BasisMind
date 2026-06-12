@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum
-from typing import Final
 
 from .config import (
     SCORING_WEIGHT_LINEUP,
@@ -186,14 +185,27 @@ def compute_component_scores(
     )
 
 
-def compute_score_fisico(components: ComponentScores) -> float:
+def compute_score_fisico(
+    components: ComponentScores,
+    competitiveness_weight_modifier: float = 1.0,
+) -> float:
+    competitiveness_weight = (
+        SCORING_WEIGHT_COMPETITIVENESS * competitiveness_weight_modifier
+    )
+    total_weight = (
+        SCORING_WEIGHT_LINEUP
+        + SCORING_WEIGHT_PREMIUM
+        + competitiveness_weight
+        + SCORING_WEIGHT_DEMAND
+        + SCORING_WEIGHT_CAMBIO
+    )
     score = (
         SCORING_WEIGHT_LINEUP * components.lineup
         + SCORING_WEIGHT_PREMIUM * components.premium
-        + SCORING_WEIGHT_COMPETITIVENESS * components.competitiveness
+        + competitiveness_weight * components.competitiveness
         + SCORING_WEIGHT_DEMAND * components.demand
         + SCORING_WEIGHT_CAMBIO * components.cambio
-    )
+    ) / total_weight
     return _clamp(score)
 
 
@@ -302,6 +314,7 @@ def compute_scoring(
     var_cambio_5d: float | None,
     chicago_percentile: float,
     chicago_is_spike: bool = False,
+    competitiveness_weight_modifier: float = 1.0,
 ) -> ScoringResult:
     components = compute_component_scores(
         var_semanal_lineup=var_semanal_lineup,
@@ -311,7 +324,7 @@ def compute_scoring(
         var_cambio_5d=var_cambio_5d,
     )
 
-    score_fisico = compute_score_fisico(components)
+    score_fisico = compute_score_fisico(components, competitiveness_weight_modifier)
     classification = classify_score_fisico(score_fisico)
     physical = compute_physical_recommendation(score_fisico)
     hedge = compute_hedge_recommendation(chicago_percentile, chicago_is_spike)

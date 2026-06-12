@@ -13,19 +13,16 @@ from .config import (
     DEFAULT_LIMITE_LONG_PCT,
     DEFAULT_LIMITE_SHORT_PCT,
     DEFAULT_HEDGE_META_PCT,
+    FREIGHT_ABNORMAL_WEIGHT_MODIFIER,
 )
 from .scoring import (
     compute_scoring,
     ScoringResult,
-    PhysicalRecommendation,
-    HedgeRecommendation,
-    Intensity,
 )
 from .overrides import (
     evaluate_overrides,
     get_override_justification,
     OverrideEvaluation,
-    OverrideType,
 )
 from .book import (
     BookState,
@@ -50,6 +47,7 @@ class MarketInputs:
     logistics_flag_active: bool
     logistics_reason: str | None
     narrativa_confirmada: bool = False
+    freight_is_abnormal: bool = False
 
 
 @dataclass(frozen=True)
@@ -162,6 +160,7 @@ def _build_justificativa(
     scoring: ScoringResult,
     override_eval: OverrideEvaluation,
     modulated: ModulatedResult,
+    freight_is_abnormal: bool = False,
 ) -> str:
     parts = []
 
@@ -185,6 +184,9 @@ def _build_justificativa(
         direction = "forte" if score > 65 else "fraco" if score < 35 else "neutro"
         drivers.append(f"{name} {direction}")
     parts.append(f"Drivers: {', '.join(drivers)}")
+
+    if freight_is_abnormal:
+        parts.append("Frete anormal: peso da competitividade reduzido pela metade")
 
     if override_eval.has_override:
         parts.append(get_override_justification(override_eval))
@@ -222,6 +224,9 @@ def run_decision_engine(
         var_cambio_5d=inputs.var_cambio_5d,
         chicago_percentile=inputs.chicago_percentile,
         chicago_is_spike=inputs.chicago_is_spike,
+        competitiveness_weight_modifier=(
+            FREIGHT_ABNORMAL_WEIGHT_MODIFIER if inputs.freight_is_abnormal else 1.0
+        ),
     )
 
     override_eval = evaluate_overrides(
@@ -247,7 +252,9 @@ def run_decision_engine(
         book,
     )
 
-    justificativa = _build_justificativa(scoring, override_eval, modulated)
+    justificativa = _build_justificativa(
+        scoring, override_eval, modulated, inputs.freight_is_abnormal
+    )
 
     return DecisionReport(
         data_referencia=inputs.dt,

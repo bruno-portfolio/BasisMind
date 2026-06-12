@@ -94,6 +94,20 @@ class TestRunDecisionEngine:
         assert report.override_dominante == "armadilha_premio"
         assert report.recomendacao_fisica["acao"] == "reduzir_forte"
 
+    def test_frete_anormal_reduz_peso_da_competitividade(self):
+        base = run_decision_engine(make_inputs(spread_adjusted=-18.0))
+        abnormal = run_decision_engine(
+            make_inputs(spread_adjusted=-18.0, freight_is_abnormal=True)
+        )
+        assert abnormal.score_fisico < base.score_fisico
+        assert "Frete anormal" in abnormal.justificativa
+
+    def test_frete_normal_nao_altera_score(self):
+        base = run_decision_engine(make_inputs())
+        explicit = run_decision_engine(make_inputs(freight_is_abnormal=False))
+        assert explicit.score_fisico == base.score_fisico
+        assert "Frete anormal" not in explicit.justificativa
+
     def test_book_no_limite_long_modula_recomendacao(self):
         inputs = make_inputs(**OPPORTUNITY)
         book = make_book(exposicao=80.0, hedge_atual=60.0)

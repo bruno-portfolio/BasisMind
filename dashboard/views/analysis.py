@@ -116,7 +116,10 @@ with tab_curves:
                 xs, [score_cambio(x) for x in xs], "USD/BRL 5d variation (%)", RED
             )
         )
-        st.caption("Inverse: a strengthening real scores high (margin-supportive).")
+        st.caption(
+            "Inverse: a strengthening real scores high — supply retention: "
+            "farmers slow their selling."
+        )
     with c6:
         st.markdown("##### Why linear maps?")
         st.markdown("""

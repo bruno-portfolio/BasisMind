@@ -3,6 +3,7 @@ from datetime import date
 import streamlit as st
 
 from basismind.book import BookState
+from basismind.config import FREIGHT_ABNORMAL_WEIGHT_MODIFIER
 from basismind.engine import DecisionEngine, MarketInputs
 from basismind.scoring import compute_scoring
 from data import SCENARIO_VALUES
@@ -115,7 +116,7 @@ with col_inputs:
     )
 
     st.markdown("##### Flags")
-    f1, f2 = st.columns(2)
+    f1, f2, f3 = st.columns(3)
     chicago_spike = f1.toggle(
         "Chicago spike >5% / 5d",
         key="chicago_is_spike",
@@ -127,6 +128,11 @@ with col_inputs:
         key="logistics_flag_active",
         help="Strike, port congestion, loading rate collapse. Highest-priority "
         "override: forces a strong reduction.",
+    )
+    freight_abnormal = f3.toggle(
+        "Abnormal freight",
+        help="Freight deviating >2σ from its history distorts the FOB spread, so "
+        "the competitiveness weight is halved while it lasts.",
     )
 
     narrativa_confirmada = False
@@ -172,6 +178,7 @@ inputs = MarketInputs(
     logistics_flag_active=logistics_active,
     logistics_reason=logistics_reason,
     narrativa_confirmada=narrativa_confirmada,
+    freight_is_abnormal=freight_abnormal,
 )
 
 report = DecisionEngine(book).run(inputs)
@@ -184,6 +191,9 @@ raw = compute_scoring(
     var_cambio_5d=inputs.var_cambio_5d,
     chicago_percentile=inputs.chicago_percentile,
     chicago_is_spike=inputs.chicago_is_spike,
+    competitiveness_weight_modifier=(
+        FREIGHT_ABNORMAL_WEIGHT_MODIFIER if inputs.freight_is_abnormal else 1.0
+    ),
 )
 
 with col_results:

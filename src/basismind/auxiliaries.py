@@ -32,7 +32,6 @@ class CambioMetrics:
     var_5d: float | None
     var_20d: float | None
     signal: CambioSignal | None
-    modulation: float
 
 
 CAMBIO_THRESHOLDS: dict[CambioSignal, tuple[float, float]] = {
@@ -59,19 +58,6 @@ def classify_cambio_signal(var_5d: float | None) -> CambioSignal | None:
     return CambioSignal.FORTE_ALTA
 
 
-def get_cambio_modulation(signal: CambioSignal | None) -> float:
-    if signal is None:
-        return 1.0
-    modulations = {
-        CambioSignal.FORTE_ALTA: 1.2,
-        CambioSignal.ALTA: 1.1,
-        CambioSignal.NEUTRO: 1.0,
-        CambioSignal.QUEDA: 0.9,
-        CambioSignal.FORTE_QUEDA: 0.8,
-    }
-    return modulations.get(signal, 1.0)
-
-
 def compute_cambio_metrics(
     dt: date,
     usd_brl: float,
@@ -81,7 +67,6 @@ def compute_cambio_metrics(
     var_5d = calculate_var_percent(usd_brl, usd_brl_5d_ago)
     var_20d = calculate_var_percent(usd_brl, usd_brl_20d_ago)
     signal = classify_cambio_signal(var_5d)
-    modulation = get_cambio_modulation(signal)
 
     return CambioMetrics(
         date=dt,
@@ -89,7 +74,6 @@ def compute_cambio_metrics(
         var_5d=var_5d,
         var_20d=var_20d,
         signal=signal,
-        modulation=modulation,
     )
 
 
