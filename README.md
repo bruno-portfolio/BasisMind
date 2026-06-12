@@ -7,13 +7,6 @@
 
 > **Basis** (commodity trading term) + **Mind** (intelligence) — A decision support system for physical grain trading operations, transforming scattered market signals into consistent and auditable recommendations.
 
-<img width="1784" height="811" alt="image" src="https://github.com/user-attachments/assets/9ac91985-44f3-40c2-a474-75369976fbf7" />
-<img width="1493" height="820" alt="image" src="https://github.com/user-attachments/assets/2f1ff170-c253-492b-9e1f-9f2a38323059" />
-<img width="1416" height="874" alt="image" src="https://github.com/user-attachments/assets/8f3caaeb-7f70-40be-b617-e25d0407c7e2" />
-<img width="1423" height="865" alt="image" src="https://github.com/user-attachments/assets/7909df82-fa71-46d7-804d-3c09eff62d2f" />
-<img width="1419" height="886" alt="image" src="https://github.com/user-attachments/assets/d11f05a9-d2de-4af9-a219-e48514826aa7" />
-<img width="971" height="887" alt="image" src="https://github.com/user-attachments/assets/38161f03-dd7f-476a-8a0c-9fb77ec98b60" />
-
 ## Overview
 
 The **Decision Engine** standardizes market reading and reduces subjective bias in commodity trading decisions. It formalizes into explicit rules the logic that experienced professionals apply intuitively.
@@ -94,7 +87,7 @@ pip install -e .
 ### Run the Dashboard
 
 ```bash
-streamlit run dashboard/BasisMind.py
+streamlit run dashboard/app.py
 # or: python run_dashboard.py
 ```
 
@@ -142,13 +135,10 @@ BasisMind/
 │   ├── mock_generator.py     # Synthetic data generator
 │   └── ...
 ├── dashboard/                # Streamlit dashboard
-│   ├── BasisMind.py          # Home page
-│   └── pages/
-│       ├── 1_📊_Market_Data.py
-│       ├── 2_🎯_Decision_Engine.py
-│       ├── 3_🔄_Simulator.py
-│       ├── 4_📈_Analysis.py
-│       └── 5_📚_Documentation.py
+│   ├── app.py                # Entrypoint (navigation + theme)
+│   ├── ui.py                 # Design system: palette, charts, cards
+│   ├── data.py               # Mock data → real signal metrics → MarketInputs
+│   └── views/                # home · engine · simulator · market · analysis · docs
 ├── tests/                    # Behavior tests for the decision logic
 ├── examples/
 │   └── demo.py               # CLI demonstration
@@ -241,6 +231,7 @@ The Decision Engine does **NOT**:
 
 - **Python 3.11+**
 - **Streamlit** - Interactive dashboard
+- **Plotly** - Interactive charts
 - **SQLite** - Local storage
 - **Pandas** - Data manipulation
 

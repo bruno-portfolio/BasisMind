@@ -10,7 +10,7 @@ def main():
         print("Pacote 'basismind' não instalado. Execute: pip install -e .")
         sys.exit(1)
 
-    dashboard_path = Path(__file__).parent / "dashboard" / "BasisMind.py"
+    dashboard_path = Path(__file__).parent / "dashboard" / "app.py"
 
     if not dashboard_path.exists():
         print(f"Error: {dashboard_path} not found")
