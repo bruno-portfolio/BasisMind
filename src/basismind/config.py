@@ -2,7 +2,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import Final
 
-ROOT_DIR: Final[Path] = Path(__file__).parent.parent
+ROOT_DIR: Final[Path] = Path(__file__).resolve().parents[2]
 DATA_DIR: Final[Path] = ROOT_DIR / "data"
 LOGS_DIR: Final[Path] = ROOT_DIR / "logs"
 DB_PATH: Final[Path] = DATA_DIR / "motor_decisao.db"
@@ -84,20 +84,6 @@ DEFAULT_LIMITE_LONG_PCT: Final[float] = 80.0
 DEFAULT_LIMITE_SHORT_PCT: Final[float] = -50.0
 DEFAULT_HEDGE_META_PCT: Final[float] = 60.0
 
-OVERRIDE_QUEDA_LINEUP_THRESHOLD: Final[float] = -10.0
-OVERRIDE_QUEDA_PREMIUM_PERCENTILE: Final[float] = 40.0
-OVERRIDE_ARMADILHA_LINEUP_THRESHOLD: Final[float] = -10.0
-OVERRIDE_ARMADILHA_PREMIUM_PERCENTILE: Final[float] = 80.0
-OVERRIDE_COMPETITIVIDADE_SPREAD: Final[float] = 15.0
-
-VALID_RANGES: Final[dict[str, tuple[float, float]]] = {
-    "premium_paranagua": (-200, 500),
-    "chicago_front": (500, 2500),
-    "usd_brl": (3.0, 10.0),
-    "fob_us_gulf": (200, 800),
-    "exports_weekly_tons": (0, 10_000_000),
-}
-
 
 @dataclass(frozen=True)
 class ColumnSpec:
@@ -105,7 +91,7 @@ class ColumnSpec:
     dtype: str
     min_val: float | None = None
     max_val: float | None = None
-    nullable: bool = False
+    nullable: bool = True
 
 
 MARKET_DATA_COLUMNS: Final[tuple[ColumnSpec, ...]] = (
@@ -113,7 +99,7 @@ MARKET_DATA_COLUMNS: Final[tuple[ColumnSpec, ...]] = (
     ColumnSpec("premium_paranagua", "DECIMAL", min_val=-200, max_val=500),
     ColumnSpec("chicago_front", "DECIMAL", min_val=500, max_val=2500),
     ColumnSpec("usd_brl", "DECIMAL", min_val=3.0, max_val=10.0),
-    ColumnSpec("fob_us_gulf", "DECIMAL", min_val=500, max_val=2500),
+    ColumnSpec("fob_us_gulf", "DECIMAL", min_val=200, max_val=800),
     ColumnSpec("lineup_bruto", "INTEGER", min_val=0, max_val=500),
     ColumnSpec("lineup_liquido", "INTEGER", min_val=0, max_val=500),
     ColumnSpec("cancelamentos_7d", "INTEGER", min_val=0, max_val=100),

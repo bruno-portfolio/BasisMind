@@ -189,8 +189,7 @@ st.markdown("## Overview")
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    st.markdown(
-        """
+    st.markdown("""
     **BasisMind** transforms scattered market signals into **consistent** and
     **auditable** recommendations for physical soybean trading operations.
 
@@ -204,12 +203,10 @@ with col1:
     | **Hedge** | Increase Chicago hedge, hold, or reduce? |
 
     Every recommendation includes a **traceable justification** showing which signals drove the decision.
-    """
-    )
+    """)
 
 with col2:
-    st.markdown(
-        """
+    st.markdown("""
     ### Principles
 
     - Consistency over intuition
@@ -217,8 +214,7 @@ with col2:
     - Explicit rules
     - No price prediction
     - Complements human judgment
-    """
-    )
+    """)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -366,8 +362,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 st.markdown("## Navigation")
 
-st.info(
-    """
+st.info("""
 Use the **sidebar** to navigate between pages:
 
 - **Market Data** - View simulated historical data
@@ -375,8 +370,7 @@ Use the **sidebar** to navigate between pages:
 - **Simulator** - Create your own scenarios and test the engine
 - **Analysis** - Sensitivity analysis and components
 - **Documentation** - Complete technical documentation
-"""
-)
+""")
 
 st.markdown("---")
 st.markdown(

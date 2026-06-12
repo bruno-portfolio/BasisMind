@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import json
 import logging
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from datetime import date
 from typing import Any
 
-from config import (
+from .config import (
     TRIGGER_LINEUP_CHANGE_PCT,
     TRIGGER_PREMIUM_STD,
     TRIGGER_CHICAGO_CHANGE_PCT,
@@ -14,26 +14,25 @@ from config import (
     DEFAULT_LIMITE_SHORT_PCT,
     DEFAULT_HEDGE_META_PCT,
 )
-from scoring import (
+from .scoring import (
     compute_scoring,
     ScoringResult,
     PhysicalRecommendation,
     HedgeRecommendation,
     Intensity,
 )
-from overrides import (
+from .overrides import (
     evaluate_overrides,
     get_override_justification,
     OverrideEvaluation,
     OverrideType,
 )
-from book import (
+from .book import (
     BookState,
     ModulatedResult,
     modulate_by_book,
     calculate_effective_sizing,
 )
-
 
 logger = logging.getLogger(__name__)
 

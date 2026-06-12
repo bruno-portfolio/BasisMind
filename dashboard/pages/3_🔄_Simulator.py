@@ -1,14 +1,8 @@
 import streamlit as st
-import sys
-from pathlib import Path
 from datetime import date
 
-ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(ROOT / "src"))
-sys.path.insert(0, str(ROOT / "data"))
-
-from engine import DecisionEngine, MarketInputs
-from book import BookState
+from basismind.engine import DecisionEngine, MarketInputs
+from basismind.book import BookState
 
 st.set_page_config(page_title="Simulator | BasisMind", page_icon="🔄", layout="wide")
 

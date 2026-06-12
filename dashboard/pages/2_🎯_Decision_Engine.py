@@ -1,15 +1,9 @@
 import streamlit as st
-import sys
-from pathlib import Path
 from datetime import date
 import json
 
-ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(ROOT / "src"))
-sys.path.insert(0, str(ROOT / "data"))
-
-from engine import DecisionEngine, MarketInputs, DecisionReport
-from book import BookState
+from basismind.engine import DecisionEngine, MarketInputs
+from basismind.book import BookState
 
 st.set_page_config(
     page_title="Decision Engine | BasisMind", page_icon="🎯", layout="wide"
@@ -421,26 +415,22 @@ with col2:
     col_a, col_b = st.columns(2)
 
     with col_a:
-        st.markdown(
-            f"""
+        st.markdown(f"""
         | Indicator | Value |
         |-----------|-------|
         | Weekly Lineup Var. | {inputs.var_semanal_lineup:+.1f}% |
         | Premium Percentile | {inputs.percentil_premium:.0f} |
         | Adjusted Spread | {inputs.spread_adjusted:+.1f} USD/ton |
-        """
-        )
+        """)
 
     with col_b:
-        st.markdown(
-            f"""
+        st.markdown(f"""
         | Indicator | Value |
         |-----------|-------|
         | Demand Z-Pace | {inputs.z_pace:+.2f} |
         | FX Var. 5d | {inputs.var_cambio_5d:+.1f}% |
         | Chicago Percentile | {inputs.chicago_percentile:.0f} |
-        """
-        )
+        """)
 
     st.markdown("### Justification")
     st.info(report.justificativa)

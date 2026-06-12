@@ -4,6 +4,16 @@ from dataclasses import dataclass
 from enum import Enum
 from statistics import mean, stdev
 
+from .config import (
+    CAMBIO_FORTE_THRESHOLD,
+    DEMAND_Z_FORTE,
+    LOGISTICS_WAIT_THRESHOLD_DAYS,
+    LOGISTICS_WAIT_CONSECUTIVE_WEEKS,
+    LOGISTICS_LOADING_RATE_MIN,
+    CHICAGO_SPECULATIVE_SPIKE,
+)
+from .premium import calculate_percentile
+
 logger = logging.getLogger(__name__)
 
 
@@ -26,11 +36,11 @@ class CambioMetrics:
 
 
 CAMBIO_THRESHOLDS: dict[CambioSignal, tuple[float, float]] = {
-    CambioSignal.FORTE_QUEDA: (float("-inf"), -3.0),
-    CambioSignal.QUEDA: (-3.0, -1.0),
+    CambioSignal.FORTE_QUEDA: (float("-inf"), -CAMBIO_FORTE_THRESHOLD),
+    CambioSignal.QUEDA: (-CAMBIO_FORTE_THRESHOLD, -1.0),
     CambioSignal.NEUTRO: (-1.0, 1.0),
-    CambioSignal.ALTA: (1.0, 3.0),
-    CambioSignal.FORTE_ALTA: (3.0, float("inf")),
+    CambioSignal.ALTA: (1.0, CAMBIO_FORTE_THRESHOLD),
+    CambioSignal.FORTE_ALTA: (CAMBIO_FORTE_THRESHOLD, float("inf")),
 }
 
 
@@ -102,11 +112,11 @@ class DemandMetrics:
 
 
 DEMAND_Z_THRESHOLDS: dict[DemandSignal, tuple[float, float]] = {
-    DemandSignal.MUITO_FRACA: (float("-inf"), -1.5),
-    DemandSignal.FRACA: (-1.5, -0.5),
+    DemandSignal.MUITO_FRACA: (float("-inf"), -DEMAND_Z_FORTE),
+    DemandSignal.FRACA: (-DEMAND_Z_FORTE, -0.5),
     DemandSignal.NORMAL: (-0.5, 0.5),
-    DemandSignal.FORTE: (0.5, 1.5),
-    DemandSignal.MUITO_FORTE: (1.5, float("inf")),
+    DemandSignal.FORTE: (0.5, DEMAND_Z_FORTE),
+    DemandSignal.MUITO_FORTE: (DEMAND_Z_FORTE, float("inf")),
 }
 
 
@@ -158,11 +168,6 @@ class LogisticsFlag:
     manual_event: str | None
 
 
-WAIT_TIME_THRESHOLD_DAYS: int = 15
-WAIT_TIME_CONSECUTIVE_WEEKS: int = 2
-LOADING_RATE_THRESHOLD: float = 0.70
-
-
 def compute_logistics_flag(
     wait_time_days: float | None = None,
     wait_time_weeks_above: int = 0,
@@ -173,15 +178,17 @@ def compute_logistics_flag(
 
     if (
         wait_time_days is not None
-        and wait_time_days > WAIT_TIME_THRESHOLD_DAYS
-        and wait_time_weeks_above >= WAIT_TIME_CONSECUTIVE_WEEKS
+        and wait_time_days > LOGISTICS_WAIT_THRESHOLD_DAYS
+        and wait_time_weeks_above >= LOGISTICS_WAIT_CONSECUTIVE_WEEKS
     ):
         reasons.append(
-            f"espera_navios>{WAIT_TIME_THRESHOLD_DAYS}d_por_{wait_time_weeks_above}sem"
+            f"espera_navios>{LOGISTICS_WAIT_THRESHOLD_DAYS}d_por_{wait_time_weeks_above}sem"
         )
 
-    if loading_rate is not None and loading_rate < LOADING_RATE_THRESHOLD:
-        reasons.append(f"taxa_embarque={loading_rate*100:.0f}%<70%")
+    if loading_rate is not None and loading_rate < LOGISTICS_LOADING_RATE_MIN:
+        reasons.append(
+            f"taxa_embarque={loading_rate * 100:.0f}%<{LOGISTICS_LOADING_RATE_MIN * 100:.0f}%"
+        )
 
     if manual_event:
         reasons.append(f"evento_manual:{manual_event}")
@@ -221,17 +228,6 @@ CHICAGO_PERCENTILE_THRESHOLDS: dict[ChicagoSignal, tuple[float, float]] = {
     ChicagoSignal.MUITO_ALTO: (80, 100),
 }
 
-CHICAGO_SPECULATIVE_SPIKE_THRESHOLD: float = 5.0
-
-
-def calculate_percentile(value: float, historical: list[float]) -> float:
-    if not historical:
-        return 50.0
-    count_below = sum(1 for h in historical if h < value)
-    count_equal = sum(1 for h in historical if h == value)
-    percentile = (count_below + 0.5 * count_equal) / len(historical) * 100
-    return round(percentile, 2)
-
 
 def classify_chicago_signal(percentile: float) -> ChicagoSignal:
     for signal, (lower, upper) in CHICAGO_PERCENTILE_THRESHOLDS.items():
@@ -246,12 +242,16 @@ def compute_chicago_metrics(
     historical_180d: list[float],
     chicago_5d_ago: float | None = None,
 ) -> ChicagoMetrics:
-    percentile = calculate_percentile(chicago_front, historical_180d)
+    percentile = (
+        calculate_percentile(chicago_front, historical_180d)
+        if historical_180d
+        else 50.0
+    )
     signal = classify_chicago_signal(percentile)
     var_5d = calculate_var_percent(chicago_front, chicago_5d_ago)
 
     is_speculative = False
-    if var_5d is not None and var_5d > CHICAGO_SPECULATIVE_SPIKE_THRESHOLD:
+    if var_5d is not None and var_5d > CHICAGO_SPECULATIVE_SPIKE:
         is_speculative = True
         logger.warning("Spike especulativo detectado em Chicago: +%.1f%% em 5d", var_5d)
 

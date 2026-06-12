@@ -7,9 +7,7 @@ from email.mime.text import MIMEText
 from pathlib import Path
 from typing import Any
 
-from config import LOGS_DIR
-
-LOGS_DIR.mkdir(parents=True, exist_ok=True)
+from .config import LOGS_DIR
 
 LOG_FORMAT = "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -50,6 +48,7 @@ class AlertHandler(ABC):
 class LogFileHandler(AlertHandler):
     def __init__(self, log_file: Path | None = None) -> None:
         self._log_file = log_file or (LOGS_DIR / "alerts.log")
+        self._log_file.parent.mkdir(parents=True, exist_ok=True)
 
     def send(self, alert: Alert) -> bool:
         try:
@@ -116,8 +115,7 @@ class EmailHandler(AlertHandler):
             return True
 
         try:
-            msg = MIMEText(
-                f"""
+            msg = MIMEText(f"""
 Motor de Decisão - Alerta {alert.level.upper()}
 
 Fonte: {alert.source}
@@ -126,8 +124,7 @@ Timestamp: {alert.timestamp}
 
 Detalhes:
 {alert.details}
-            """
-            )
+            """)
             msg["Subject"] = f"[Motor Decisão] {alert.level.upper()}: {alert.source}"
             msg["From"] = self._username
             msg["To"] = ", ".join(self._recipients)
@@ -196,6 +193,7 @@ def setup_logging(
     level: int = logging.INFO, log_file: Path | None = None
 ) -> logging.Logger:
     log_file = log_file or (LOGS_DIR / "motor_decisao.log")
+    log_file.parent.mkdir(parents=True, exist_ok=True)
 
     handlers: list[logging.Handler] = [
         logging.StreamHandler(),

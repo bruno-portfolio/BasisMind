@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Literal
 
-from config import (
+from .config import (
     BOOK_HEDGE_TOLERANCE_PP,
 )
-from scoring import (
+from .scoring import (
     PhysicalRecommendation,
     HedgeRecommendation,
     Intensity,

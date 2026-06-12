@@ -2,15 +2,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Literal
 
-from config import (
+from .config import (
     LINEUP_DROP_OVERRIDE_THRESHOLD,
     PREMIUM_THRESHOLD_BAIXO,
     PREMIUM_THRESHOLD_ALTO,
     CRITICAL_SPREAD_THRESHOLD,
 )
-from scoring import (
+from .scoring import (
     PhysicalRecommendation,
     HedgeRecommendation,
     Intensity,

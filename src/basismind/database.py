@@ -6,9 +6,16 @@ from decimal import Decimal
 from typing import Iterator, Any
 from dataclasses import dataclass
 
-from config import DB_PATH, DATA_DIR
+from .config import DB_PATH, DATA_DIR, MARKET_DATA_COLUMNS
 
 logger = logging.getLogger(__name__)
+
+QUERYABLE_COLUMNS = frozenset(spec.name for spec in MARKET_DATA_COLUMNS)
+
+
+def _check_column(column: str) -> None:
+    if column not in QUERYABLE_COLUMNS:
+        raise ValueError(f"Coluna desconhecida: {column!r}")
 
 
 @dataclass
@@ -121,14 +128,22 @@ def insert_market_data(row: MarketDataRow) -> bool:
             sql,
             (
                 row.date,
-                float(row.premium_paranagua) if row.premium_paranagua else None,
-                float(row.chicago_front) if row.chicago_front else None,
-                float(row.usd_brl) if row.usd_brl else None,
-                float(row.fob_us_gulf) if row.fob_us_gulf else None,
+                (
+                    float(row.premium_paranagua)
+                    if row.premium_paranagua is not None
+                    else None
+                ),
+                float(row.chicago_front) if row.chicago_front is not None else None,
+                float(row.usd_brl) if row.usd_brl is not None else None,
+                float(row.fob_us_gulf) if row.fob_us_gulf is not None else None,
                 row.lineup_bruto,
                 row.lineup_liquido,
                 row.cancelamentos_7d,
-                float(row.exports_weekly_tons) if row.exports_weekly_tons else None,
+                (
+                    float(row.exports_weekly_tons)
+                    if row.exports_weekly_tons is not None
+                    else None
+                ),
             ),
         )
     return True
@@ -189,6 +204,7 @@ def log_pipeline_run(
 
 
 def get_historical_data(column: str, days: int = 180) -> list[float]:
+    _check_column(column)
     sql = f"""
     SELECT {column} FROM market_data
     WHERE {column} IS NOT NULL
@@ -205,6 +221,7 @@ def get_historical_by_regime(
     years: int = 3,
     before_date: date | None = None,
 ) -> list[float]:
+    _check_column(column)
     placeholders = ",".join("?" * len(regime_months))
     ref_date = before_date or date.today()
 
@@ -259,6 +276,7 @@ def get_lineup_days_ago(
 
 
 def get_value_days_ago(column: str, reference_date: date, days: int) -> float | None:
+    _check_column(column)
     sql = f"""
     SELECT {column} FROM market_data
     WHERE date = date(?, '-' || ? || ' days')

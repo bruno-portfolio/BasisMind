@@ -4,6 +4,15 @@ from dataclasses import dataclass
 from enum import Enum
 from statistics import mean, stdev
 
+from .config import (
+    CRITICAL_SPREAD_THRESHOLD,
+    FREIGHT_ABNORMAL_STD,
+    COMPETITIVENESS_MUITO_BARATO,
+    COMPETITIVENESS_BARATO,
+    COMPETITIVENESS_CARO,
+    COMPETITIVENESS_MUITO_CARO,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -44,16 +53,21 @@ FREIGHT_DIFFERENTIAL_MONTHLY: dict[int, float] = {
 }
 
 COMPETITIVENESS_THRESHOLDS: dict[CompetitivenessClass, tuple[float, float]] = {
-    CompetitivenessClass.BRASIL_MUITO_BARATO: (float("-inf"), -20),
-    CompetitivenessClass.BRASIL_BARATO: (-20, -10),
-    CompetitivenessClass.NEUTRO: (-10, 10),
-    CompetitivenessClass.BRASIL_CARO: (10, 20),
-    CompetitivenessClass.BRASIL_MUITO_CARO: (20, float("inf")),
+    CompetitivenessClass.BRASIL_MUITO_BARATO: (
+        float("-inf"),
+        COMPETITIVENESS_MUITO_BARATO,
+    ),
+    CompetitivenessClass.BRASIL_BARATO: (
+        COMPETITIVENESS_MUITO_BARATO,
+        COMPETITIVENESS_BARATO,
+    ),
+    CompetitivenessClass.NEUTRO: (COMPETITIVENESS_BARATO, COMPETITIVENESS_CARO),
+    CompetitivenessClass.BRASIL_CARO: (
+        COMPETITIVENESS_CARO,
+        COMPETITIVENESS_MUITO_CARO,
+    ),
+    CompetitivenessClass.BRASIL_MUITO_CARO: (COMPETITIVENESS_MUITO_CARO, float("inf")),
 }
-
-CRITICAL_SPREAD_THRESHOLD: float = 15.0
-
-FREIGHT_ABNORMAL_STD: float = 2.0
 
 
 def get_freight_adjustment(month: int) -> float:

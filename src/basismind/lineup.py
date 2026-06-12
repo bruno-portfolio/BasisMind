@@ -3,6 +3,14 @@ from datetime import date
 from dataclasses import dataclass
 from enum import Enum
 
+from .config import (
+    LINEUP_DROP_OVERRIDE_THRESHOLD,
+    LINEUP_TREND_FORTE_QUEDA,
+    LINEUP_TREND_QUEDA,
+    LINEUP_TREND_ALTA,
+    LINEUP_TREND_FORTE_ALTA,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -28,14 +36,12 @@ class LineupMetrics:
 
 
 TREND_THRESHOLDS: dict[LineupTrend, tuple[float, float]] = {
-    LineupTrend.FORTE_QUEDA: (float("-inf"), -15),
-    LineupTrend.QUEDA: (-15, -5),
-    LineupTrend.ESTAVEL: (-5, 5),
-    LineupTrend.ALTA: (5, 15),
-    LineupTrend.FORTE_ALTA: (15, float("inf")),
+    LineupTrend.FORTE_QUEDA: (float("-inf"), LINEUP_TREND_FORTE_QUEDA),
+    LineupTrend.QUEDA: (LINEUP_TREND_FORTE_QUEDA, LINEUP_TREND_QUEDA),
+    LineupTrend.ESTAVEL: (LINEUP_TREND_QUEDA, LINEUP_TREND_ALTA),
+    LineupTrend.ALTA: (LINEUP_TREND_ALTA, LINEUP_TREND_FORTE_ALTA),
+    LineupTrend.FORTE_ALTA: (LINEUP_TREND_FORTE_ALTA, float("inf")),
 }
-
-LINEUP_DROP_OVERRIDE_THRESHOLD: float = -10.0
 
 
 def calculate_lineup_liquido(

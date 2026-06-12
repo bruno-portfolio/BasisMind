@@ -5,14 +5,14 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Any
 
-from config import MAX_MISSING_RATE
-from database import (
+from .config import MAX_MISSING_RATE
+from .database import (
     MarketDataRow,
     init_database,
     insert_market_data,
     log_pipeline_run,
 )
-from validators import validate_row, calculate_missing_rate
+from .validators import validate_row, calculate_missing_rate
 
 logger = logging.getLogger(__name__)
 

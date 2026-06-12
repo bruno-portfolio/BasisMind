@@ -2,16 +2,18 @@ import logging
 import statistics
 from dataclasses import dataclass
 from datetime import date
-from typing import Any
+from typing import Any, Literal
 
-from config import (
+from .config import (
     ANOMALY_STD_THRESHOLD,
     MARKET_DATA_COLUMNS,
     ColumnSpec,
 )
-from database import get_historical_data, log_quality_issue
+from .database import get_historical_data, log_quality_issue
 
 logger = logging.getLogger(__name__)
+
+Severity = Literal["warning", "error"]
 
 
 @dataclass
@@ -19,7 +21,7 @@ class ValidationResult:
     is_valid: bool
     issue_type: str | None = None
     message: str | None = None
-    severity: str = "warning"
+    severity: Severity = "warning"
 
 
 def validate_range(value: Any, spec: ColumnSpec) -> ValidationResult:
@@ -48,7 +50,7 @@ def validate_range(value: Any, spec: ColumnSpec) -> ValidationResult:
             is_valid=False,
             issue_type="out_of_range",
             message=f"{spec.name}={num_val} < min={spec.min_val}",
-            severity="warning",
+            severity="error",
         )
 
     if spec.max_val is not None and num_val > spec.max_val:
@@ -56,7 +58,7 @@ def validate_range(value: Any, spec: ColumnSpec) -> ValidationResult:
             is_valid=False,
             issue_type="out_of_range",
             message=f"{spec.name}={num_val} > max={spec.max_val}",
-            severity="warning",
+            severity="error",
         )
 
     return ValidationResult(is_valid=True)
@@ -147,7 +149,6 @@ def validate_row(
     row_data: dict[str, Any], row_date: date
 ) -> tuple[bool, list[ValidationResult]]:
     issues: list[ValidationResult] = []
-    has_critical = False
 
     for spec in MARKET_DATA_COLUMNS:
         if spec.name == "date":
@@ -164,8 +165,6 @@ def validate_row(
                 f"[{spec.min_val}, {spec.max_val}]",
                 result.severity,
             )
-            if result.severity == "critical":
-                has_critical = True
 
     lineup_result = validate_lineup_consistency(
         row_data.get("lineup_bruto"), row_data.get("lineup_liquido")
@@ -204,7 +203,8 @@ def validate_row(
                 issues.append(anomaly_result)
                 log_quality_issue(row_date, col, "anomaly", value, "4σ", "warning")
 
-    return (not has_critical, issues)
+    has_error = any(issue.severity == "error" for issue in issues)
+    return (not has_error, issues)
 
 
 def calculate_missing_rate(data: list[dict[str, Any]]) -> float:

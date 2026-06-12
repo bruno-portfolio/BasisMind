@@ -1,22 +1,16 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import sys
 from datetime import date
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-sys.path.insert(0, str(Path(__file__).parent.parent / "data"))
-
-from mock_generator import (
+from basismind.mock_generator import (
     generate_scenario_normal,
     generate_scenario_crisis,
     generate_scenario_opportunity,
     MockMarketData,
 )
-from engine import DecisionEngine, MarketInputs, DecisionReport
-from book import BookState
-from premium import get_regime
+from basismind.engine import DecisionEngine, MarketInputs, DecisionReport
+from basismind.book import BookState
 
 
 def print_header(title: str) -> None:
@@ -57,7 +51,9 @@ def calculate_metrics_from_mock(
         var_semanal = 0.0
 
     premium_min, premium_max = 40, 160
-    percentil = ((current.premium_paranagua - premium_min) / (premium_max - premium_min)) * 100
+    percentil = (
+        (current.premium_paranagua - premium_min) / (premium_max - premium_min)
+    ) * 100
     percentil = max(0, min(100, percentil))
 
     spread = current.fob_paranagua - current.fob_us_gulf
@@ -71,7 +67,9 @@ def calculate_metrics_from_mock(
         var_cambio = 0.0
 
     chicago_min, chicago_max = 950, 1450
-    chicago_pct = ((current.chicago_front - chicago_min) / (chicago_max - chicago_min)) * 100
+    chicago_pct = (
+        (current.chicago_front - chicago_min) / (chicago_max - chicago_min)
+    ) * 100
     chicago_pct = max(0, min(100, chicago_pct))
 
     if index >= 5:

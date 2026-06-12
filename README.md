@@ -35,7 +35,7 @@ Every recommendation includes a **traceable justification** showing which signal
 - **🔍 Full Traceability** - Every decision includes detailed justification
 - **🎛️ Interactive Simulator** - Test any scenario in real-time
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -79,27 +79,35 @@ Every recommendation includes a **traceable justification** showing which signal
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/basismind.git
-cd basismind
+git clone https://github.com/bruno-portfolio/BasisMind.git
+cd BasisMind
 
 # Create virtual environment
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 # or: venv\Scripts\activate  # Windows
 
-# Install dependencies
-pip install -r requirements.txt
+# Install the package
+pip install -e .
 ```
 
 ### Run the Dashboard
 
 ```bash
-streamlit run dashboard/app.py
+streamlit run dashboard/BasisMind.py
+# or: python run_dashboard.py
 ```
 
 Open **http://localhost:8501** in your browser.
 
-## 📊 Score Components
+### Run the Tests
+
+```bash
+pip install -e .[dev]
+pytest
+```
+
+## Score Components
 
 | Component | Weight | Description |
 |-----------|--------|-------------|
@@ -109,7 +117,7 @@ Open **http://localhost:8501** in your browser.
 | **Demand** | 15% | Export pace vs 5-year average |
 | **FX Rate** | 10% | USD/BRL variation (margin modulator) |
 
-## ⚡ Override Rules
+## Override Rules
 
 Overrides **dominate** the score when triggered:
 
@@ -121,37 +129,38 @@ Overrides **dominate** the score when triggered:
 | 4 | **Competitiveness** | Spread > +15 USD/ton | Sell |
 | 5 | **Chicago Spike** | >5% rise without fundamentals | Hedge, don't buy |
 
-## 📁 Project Structure
+## Project Structure
 
 ```
-basismind/
-├── src/                      # Core engine (12 modules)
+BasisMind/
+├── src/basismind/            # Core engine (installable package)
 │   ├── config.py             # Constants and thresholds
 │   ├── scoring.py            # Scoring engine
 │   ├── overrides.py          # Override rules
+│   ├── book.py               # Book modulation
 │   ├── engine.py             # Main integrated engine
+│   ├── mock_generator.py     # Synthetic data generator
 │   └── ...
 ├── dashboard/                # Streamlit dashboard
-│   ├── app.py                # Home page
-│   └── pages/                # Dashboard pages
-│       ├── 1_📊_Dados_Mercado.py
-│       ├── 2_🎯_Motor_Decisao.py
-│       ├── 3_🔄_Simulador.py
-│       ├── 4_📈_Analise.py
-│       └── 5_📚_Documentacao.py
-├── data/
-│   └── mock_generator.py     # Synthetic data generator
+│   ├── BasisMind.py          # Home page
+│   └── pages/
+│       ├── 1_📊_Market_Data.py
+│       ├── 2_🎯_Decision_Engine.py
+│       ├── 3_🔄_Simulator.py
+│       ├── 4_📈_Analysis.py
+│       └── 5_📚_Documentation.py
+├── tests/                    # Behavior tests for the decision logic
 ├── examples/
 │   └── demo.py               # CLI demonstration
 └── notebooks/
     └── demo.ipynb            # Jupyter notebook
 ```
 
-## 💻 Usage Example
+## Usage Example
 
 ```python
 from datetime import date
-from src import DecisionEngine, MarketInputs, BookState
+from basismind import DecisionEngine, MarketInputs, BookState
 
 # Initialize engine with book state
 book = BookState(
@@ -165,13 +174,13 @@ engine = DecisionEngine(book)
 
 # Prepare market inputs
 inputs = MarketInputs(
-    dt=date(2024, 5, 15),
-    var_semanal_lineup=8.0,
-    percentil_premium=72.0,
-    spread_adjusted=5.0,
-    z_pace=0.5,
-    var_cambio_5d=-0.8,
-    chicago_percentile=65.0,
+    dt=date(2024, 6, 1),
+    var_semanal_lineup=15.0,
+    percentil_premium=82.0,
+    spread_adjusted=-18.0,
+    z_pace=1.2,
+    var_cambio_5d=-2.0,
+    chicago_percentile=70.0,
     chicago_is_spike=False,
     logistics_flag_active=False,
     logistics_reason=None,
@@ -183,38 +192,44 @@ report = engine.run(inputs)
 print(f"Score: {report.score_fisico:.1f}")
 print(f"Physical: {report.recomendacao_fisica['acao']}")
 print(f"Hedge: {report.recomendacao_hedge['acao']}")
+# Score: 91.3
+# Physical: aumentar_forte
+# Hedge: aumentar
 ```
 
-## 📋 JSON Output
+## JSON Output
 
 ```json
 {
-  "data_referencia": "2024-05-15",
-  "score_fisico": 68.5,
-  "classificacao": "forte",
+  "data_referencia": "2024-06-01",
+  "score_fisico": 91.3,
+  "classificacao": "muito_forte",
   "recomendacao_fisica": {
-    "acao": "aumentar",
-    "intensidade": "moderada",
-    "sizing_pct": 15.0
+    "acao": "aumentar_forte",
+    "intensidade": "forte",
+    "sizing_pct": 25.0
   },
   "recomendacao_hedge": {
-    "acao": "manter",
-    "intensidade": "neutra",
-    "delta_pp": 0.0
+    "acao": "aumentar",
+    "intensidade": "moderada",
+    "delta_pp": 10.0
   },
   "componentes": {
-    "lineup": {"score": 77.0, "var_semanal": 8.0},
-    "premio": {"score": 72.0, "percentil": 72.0},
-    "competitividade": {"score": 37.5, "spread": 5.0},
-    "demanda": {"score": 66.7, "z_pace": 0.5},
-    "cambio": {"score": 63.3, "var_5d": -0.8}
+    "lineup": {"score": 100.0, "var_semanal": 15.0},
+    "premio": {"score": 82.0, "percentil": 82.0},
+    "competitividade": {"score": 95.0, "spread": -18.0},
+    "demanda": {"score": 90.0, "z_pace": 1.2},
+    "cambio": {"score": 83.3, "var_5d": -2.0}
   },
   "overrides_ativos": [],
-  "justificativa": "Strong physical (score 68) | Drivers: lineup strong, premium strong | ..."
+  "override_dominante": null,
+  "modulacao_aplicada": false,
+  "modulacao_razao": null,
+  "justificativa": "Fisico muito_forte (score 91) | Drivers: lineup forte, competitividade forte | Recomendacao: aumentar_forte (fisica), aumentar (hedge)"
 }
 ```
 
-## ⚠️ Limitations
+## Limitations
 
 The Decision Engine does **NOT**:
 - Predict future prices
@@ -222,14 +237,14 @@ The Decision Engine does **NOT**:
 - Capture geopolitical events
 - Guarantee results
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Python 3.11+**
 - **Streamlit** - Interactive dashboard
 - **SQLite** - Local storage
 - **Pandas** - Data manipulation
 
-## 📄 License
+## License
 
 MIT License - see [LICENSE](LICENSE) for details.
 
@@ -241,8 +256,8 @@ MIT License - see [LICENSE](LICENSE) for details.
 </p>
 
 <p align="center">
-  <a href="#-quick-start">Quick Start</a> •
-  <a href="#-features">Features</a> •
-  <a href="#-architecture">Architecture</a> •
-  <a href="#-usage-example">Usage</a>
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#features">Features</a> •
+  <a href="#architecture">Architecture</a> •
+  <a href="#usage-example">Usage</a>
 </p>

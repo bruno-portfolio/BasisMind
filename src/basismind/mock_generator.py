@@ -3,7 +3,6 @@ from __future__ import annotations
 import random
 from dataclasses import dataclass
 from datetime import date, timedelta
-from typing import Iterator
 import math
 
 
@@ -67,7 +66,9 @@ class MarketDataGenerator:
 
         premium_walk = self._random_walk("premium", 0.03)
         premium_event = self._generate_event(0.03)
-        premium = self.BASE_PREMIUM * seasonal * trend * (1 + premium_walk + premium_event)
+        premium = (
+            self.BASE_PREMIUM * seasonal * trend * (1 + premium_walk + premium_event)
+        )
         premium = max(20, min(200, premium))
 
         chicago_walk = self._random_walk("chicago", 0.015)
@@ -80,7 +81,7 @@ class MarketDataGenerator:
         usd_brl = self.BASE_USD_BRL * (1 + usd_walk + usd_event)
         usd_brl = max(4.5, min(6.5, usd_brl))
 
-        fob_pnq = (chicago / 100 * 36.74 + premium / 100 * 36.74)
+        fob_pnq = chicago / 100 * 36.74 + premium / 100 * 36.74
         fob_pnq = fob_pnq * (1 + self._random_walk("fob_pnq", 0.01))
         fob_pnq = max(350, min(650, fob_pnq))
 
@@ -152,7 +153,9 @@ def generate_scenario_crisis(days: int = 30, seed: int = 123) -> list[MockMarket
     return gen.generate_series(start_date, end_date)
 
 
-def generate_scenario_opportunity(days: int = 30, seed: int = 456) -> list[MockMarketData]:
+def generate_scenario_opportunity(
+    days: int = 30, seed: int = 456
+) -> list[MockMarketData]:
     gen = MarketDataGenerator(seed)
     gen._state["lineup"] = 0.25
     gen._state["premium"] = 0.3
@@ -161,7 +164,9 @@ def generate_scenario_opportunity(days: int = 30, seed: int = 456) -> list[MockM
     return gen.generate_series(start_date, end_date)
 
 
-def generate_scenario_logistics_crisis(days: int = 30, seed: int = 789) -> list[MockMarketData]:
+def generate_scenario_logistics_crisis(
+    days: int = 30, seed: int = 789
+) -> list[MockMarketData]:
     gen = MarketDataGenerator(seed)
     gen._state["lineup"] = 0.4
     gen._state["exports"] = -0.4
@@ -181,8 +186,12 @@ if __name__ == "__main__":
     print("Gerando cenario normal (30 dias)...")
     normal = generate_scenario_normal()
     print(f"  {len(normal)} dias gerados")
-    print(f"  Premium range: {min(d.premium_paranagua for d in normal):.0f} - {max(d.premium_paranagua for d in normal):.0f}")
-    print(f"  Lineup range: {min(d.lineup_bruto for d in normal)} - {max(d.lineup_bruto for d in normal)}")
+    print(
+        f"  Premium range: {min(d.premium_paranagua for d in normal):.0f} - {max(d.premium_paranagua for d in normal):.0f}"
+    )
+    print(
+        f"  Lineup range: {min(d.lineup_bruto for d in normal)} - {max(d.lineup_bruto for d in normal)}"
+    )
 
     print("\nGerando historico 3 anos...")
     history = generate_3y_history()

@@ -4,7 +4,7 @@ from enum import Enum
 from dataclasses import dataclass
 from typing import Literal
 
-from config import SAFRA_MONTHS, ENTRESSAFRA_MONTHS
+from .config import SAFRA_MONTHS, ENTRESSAFRA_MONTHS, MIN_HISTORICAL_SAMPLES
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +36,6 @@ CLASSIFICATION_THRESHOLDS: dict[PremiumClassification, tuple[float, float]] = {
     PremiumClassification.ALTO: (60, 80),
     PremiumClassification.MUITO_ALTO: (80, 100),
 }
-
-MIN_HISTORICAL_SAMPLES = 30
 
 
 def get_regime(dt: date) -> Regime:

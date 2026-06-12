@@ -1,15 +1,9 @@
 import streamlit as st
-import sys
-from pathlib import Path
 from datetime import date
 import pandas as pd
 
-ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(ROOT / "src"))
-sys.path.insert(0, str(ROOT / "data"))
-
-from engine import DecisionEngine, MarketInputs
-from scoring import (
+from basismind.engine import DecisionEngine, MarketInputs
+from basismind.scoring import (
     score_lineup,
     score_premium,
     score_competitiveness,
@@ -43,13 +37,11 @@ with tab1:
         df_lineup = pd.DataFrame(lineup_data)
         st.line_chart(df_lineup.set_index("Variation (%)"), height=250)
 
-        st.caption(
-            """
+        st.caption("""
         - **< -15%**: Score 0 (Strong Drop)
         - **-15% to +15%**: Linear
         - **> +15%**: Score 100 (Strong Rise)
-        """
-        )
+        """)
 
     with col2:
         st.markdown("#### Premium")
@@ -63,13 +55,11 @@ with tab1:
         df_premium = pd.DataFrame(premium_data)
         st.line_chart(df_premium.set_index("Percentile"), height=250)
 
-        st.caption(
-            """
+        st.caption("""
         - Percentile is already [0-100]
         - Score = Percentile (1:1)
         - Normalized by regime (crop/off-season)
-        """
-        )
+        """)
 
     col3, col4 = st.columns(2)
 
@@ -85,13 +75,11 @@ with tab1:
         df_comp = pd.DataFrame(comp_data)
         st.line_chart(df_comp.set_index("Spread (USD/ton)"), height=250)
 
-        st.caption(
-            """
+        st.caption("""
         - **< -20**: Score 100 (Brazil very cheap)
         - **> +20**: Score 0 (Brazil very expensive)
         - Inverse relationship: negative spread is good
-        """
-        )
+        """)
 
     with col4:
         st.markdown("#### Demand")
@@ -105,13 +93,11 @@ with tab1:
         df_demand = pd.DataFrame(demand_data)
         st.line_chart(df_demand.set_index("Z-Score"), height=250)
 
-        st.caption(
-            """
+        st.caption("""
         - **< -1.5**: Score 0 (Very weak demand)
         - **> +1.5**: Score 100 (Very strong demand)
         - Z-score of pace vs 5-year average
-        """
-        )
+        """)
 
     st.markdown("#### FX Rate")
     st.markdown("*Weight: 10%*")
@@ -127,14 +113,12 @@ with tab1:
     with col_cambio:
         st.line_chart(df_cambio.set_index("5d Variation (%)"), height=200)
     with col_exp:
-        st.caption(
-            """
+        st.caption("""
         - **Inverse relationship**
         - Strong real (negative) = High score
         - Weak real (positive) = Low score
         - USD margin improves with strong real
-        """
-        )
+        """)
 
 
 with tab2:
@@ -183,14 +167,12 @@ with tab2:
 
     st.caption("Columns: Premium Percentile | Rows: Weekly Lineup Variation")
 
-    st.markdown(
-        """
+    st.markdown("""
     **Legend:**
     - Green: Score >= 65 (Strong Physical)
     - Yellow: Score 35-65 (Neutral)
     - Red: Score <= 35 (Weak Physical)
-    """
-    )
+    """)
 
 
 with tab3:
@@ -260,12 +242,10 @@ with tab3:
     df_overrides = pd.DataFrame(overrides_data)
     st.dataframe(df_overrides, use_container_width=True, hide_index=True)
 
-    st.info(
-        """
+    st.info("""
     **Hierarchy:** When multiple overrides are active, the one with **highest priority** is applied
     (lower number = more conservative).
-    """
-    )
+    """)
 
     st.markdown("---")
 

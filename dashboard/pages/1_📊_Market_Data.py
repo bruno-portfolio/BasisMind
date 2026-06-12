@@ -1,13 +1,7 @@
 import streamlit as st
-import sys
-from pathlib import Path
 from datetime import date, timedelta
 
-ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(ROOT / "src"))
-sys.path.insert(0, str(ROOT / "data"))
-
-from mock_generator import generate_3y_history, MarketDataGenerator
+from basismind.mock_generator import generate_3y_history
 
 st.set_page_config(page_title="Market Data | BasisMind", page_icon="📊", layout="wide")
 
@@ -54,11 +48,9 @@ def load_data():
 with st.spinner("Loading historical data..."):
     history = load_data()
 
-st.markdown(
-    f"""
+st.markdown(f"""
 **Period:** {history[0].date} to {history[-1].date} ({len(history)} business days)
-"""
-)
+""")
 
 tab1, tab2, tab3, tab4 = st.tabs(
     ["📈 Premium", "🚢 Line-up", "💹 Chicago & FX", "📊 Statistics"]

@@ -5,7 +5,7 @@ from datetime import date
 from enum import Enum
 from typing import Final
 
-from config import (
+from .config import (
     SCORING_WEIGHT_LINEUP,
     SCORING_WEIGHT_PREMIUM,
     SCORING_WEIGHT_COMPETITIVENESS,
